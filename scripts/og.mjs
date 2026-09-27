@@ -1,4 +1,4 @@
-// 生成社交分享卡片 public/og.png（1200×630），书卷风格：宣纸底、双线框、朱砂名章。
+// 生成社交分享卡片 public/og.png（1200×630），书卷风格：宣纸底、双线框、校徽（没有校徽图时用朱砂名章）。
 // 读取 src/data/profile.yaml，用本机 Chrome 无头截图：npm run og
 // Chrome 不在默认位置时，用环境变量 CHROME_PATH 指定。
 import { execFileSync } from 'node:child_process';
@@ -27,6 +27,12 @@ const four =
   sealChars.length >= 4 ? sealChars.slice(0, 4) : sealChars.length === 3 ? [...sealChars, '印'] : [...sealChars, '之', '印'];
 const cells = [four[2], four[0], four[3], four[1]].map((c) => `<span>${esc(c ?? '')}</span>`).join('');
 
+// 校徽：与网站相同，src/assets/emblem.* 存在时代替名章
+const emblem = ['png', 'webp', 'svg'].map((ext) => join(root, 'src/assets', `emblem.${ext}`)).find(existsSync);
+const mark = emblem
+  ? `<img class="emblem" src="${fileUrl(emblem)}" alt="">`
+  : `<div class="seal"><div>${cells}</div></div>`;
+
 const fontCss = [
   '@fontsource-variable/noto-serif-sc/index.css',
   '@fontsource-variable/eb-garamond/index.css',
@@ -41,7 +47,7 @@ ${fontCss.join('\n')}
   html, body { margin: 0; width: 1200px; height: 630px; background: #f3eee3; color: #2a2521; }
   body {
     position: relative; box-sizing: border-box; padding: 0 110px;
-    display: grid; grid-template-columns: 210px 1fr; align-items: center; gap: 80px;
+    display: grid; grid-template-columns: ${emblem ? 230 : 210}px 1fr; align-items: center; gap: ${emblem ? 72 : 80}px;
     font-family: "Noto Serif SC Variable", serif;
   }
   .frame { position: absolute; inset: 22px; border: 1px solid #d6cbb8; }
@@ -53,6 +59,7 @@ ${fontCss.join('\n')}
     color: #fbf8f1; font-size: 70px; font-weight: 900; line-height: 1;
   }
   .seal span { display: grid; place-items: center; }
+  .emblem { display: block; width: 230px; height: 230px; }
   .name { margin: 0; font-size: 78px; font-weight: 900; line-height: 1.15; letter-spacing: 0.12em; }
   .alt { margin: 8px 0 0; color: #6f6358; font-family: "EB Garamond Variable", serif; font-size: 34px; font-style: italic; }
   .ornament { display: flex; align-items: center; gap: 14px; margin: 28px 0 26px; }
@@ -64,7 +71,7 @@ ${fontCss.join('\n')}
 </style>
 <div class="frame"></div>
 <div class="frame inner"></div>
-<div class="seal"><div>${cells}</div></div>
+${mark}
 <div>
   <h1 class="name">${esc(name)}</h1>
   ${altName && altName !== name ? `<p class="alt">${esc(altName)}</p>` : ''}

@@ -2,7 +2,7 @@
 
 中英双语的个人学术主页，用 [Astro](https://astro.build) 生成静态网站，部署在 GitHub Pages。
 
-- 「书卷人文」风格：宣纸底色、思源宋体排版、朱砂名章，板块以壹、贰、叁编号
+- 「书卷人文」风格：宣纸底色、思源宋体排版、校徽与朱砂小印，板块以壹、贰、叁编号
 - 中文版在 `/`，英文版在 `/en/`，右上角可以切换语言
 - 页面包括：首页、研究（论文与报告）、项目、文章、可打印简历
 - 支持夜读（深色）模式和数学公式（KaTeX），代码自动高亮
@@ -16,7 +16,8 @@
 | 论文、工作论文、报告 | `src/data/publications.yaml` |
 | 项目 | `src/content/projects/zh/*.md` 与 `en/*.md` |
 | 文章 | `src/content/writing/zh/*.md` 与 `en/*.md` |
-| 名章文字 | 默认取中文名（三字名补「印」，两字名补「之印」）；想自定义就在 `profile.yaml` 加一行 `seal: 四个字` |
+| 校徽 | `src/assets/emblem.png`（透明底的单色图），显示在首页、简历页和分享卡片上；删掉这张图就换回朱砂名章。颜色由 `src/styles/tokens.css` 的 `--emblem` 决定（日间、夜读各一处） |
+| 名章文字 | 页眉、页脚的小印（没有校徽图时首页也用它）默认取中文名（三字名补「印」，两字名补「之印」）；想自定义就在 `profile.yaml` 加一行 `seal: 四个字` |
 | 简历 PDF | 放到 `public/cv/`，并在 `profile.yaml` 的 `cv` 中填写路径 |
 | 论文 PDF | 放到 `public/papers/`，在 `publications.yaml` 的 `links.pdf` 中填写 `/papers/文件名.pdf` |
 | 朱砂色（强调色） | `src/styles/tokens.css` 中的 `--seal`（日间、夜读各一处） |
@@ -71,7 +72,7 @@ npm install        # 第一次运行前安装依赖
 npm run dev        # 本地预览：http://localhost:4321 ，改完保存即自动刷新
 npm run build      # 检查内容并生成网站到 dist/
 npm run preview    # 预览 build 的结果
-npm run og         # 重新生成社交分享卡片 public/og.png（改了姓名、身份后运行）
+npm run og         # 重新生成社交分享卡片 public/og.png（改了姓名、身份或校徽后运行）
 ```
 
 ## 发布
@@ -100,7 +101,7 @@ git push
    ├─ site.config.ts              GitHub 用户名与网址
    ├─ data/                       ★ profile.yaml、publications.yaml
    ├─ content/                    ★ 项目与文章（Markdown）
-   ├─ assets/                     项目与文章图片
+   ├─ assets/                     照片、校徽，以及项目与文章图片
    ├─ integrations/cjk-subset.ts  构建后按全站用字裁剪中文字体
    ├─ content.config.ts           内容字段校验规则
    ├─ i18n/                       界面文案（导航、按钮等）与语言工具

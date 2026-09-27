@@ -1,0 +1,64 @@
+---
+/**
+ * 扉页标识：src/assets/emblem.png（透明底的单色校徽）存在时显示校徽，否则退回朱砂名章。
+ * 校徽图只当作蒙版，由 --emblem 色填充，夜读模式下自动换成浅色；比例始终 1:1，不会被拉伸。
+ */
+import Seal from './Seal.astro';
+import { sealText, type Profile } from '../lib/content';
+import { tx } from '../i18n/utils';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  profile: Profile;
+  lang: Lang;
+  size?: 'lg' | 'sm';
+}
+
+const { profile, lang, size = 'lg' } = Astro.props;
+const files = import.meta.glob<ImageMetadata>('../assets/emblem.{png,webp,svg}', { eager: true, import: 'default' });
+const emblem = Object.values(files)[0];
+const school = tx(profile.affiliation, lang);
+const label = lang === 'zh' ? `${school}校徽` : school ? `Emblem of ${school}` : 'University emblem';
+---
+
+{
+  emblem ? (
+    <span
+      class:list={['emblem', `emblem-${size}`]}
+      role="img"
+      aria-label={label}
+      style={`--emblem-src: url("${emblem.src}")`}
+    />
+  ) : (
+    <Seal text={sealText(profile)} size={size} />
+  )
+}
+
+<style>
+  .emblem {
+    display: inline-block;
+    flex: none;
+    aspect-ratio: 1;
+    background-color: var(--emblem);
+    -webkit-mask: var(--emblem-src) center / contain no-repeat;
+    mask: var(--emblem-src) center / contain no-repeat;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  /* 直径约为首页姓名宽度的三分之二，中间的印与单个字大小相当 */
+  .emblem-lg {
+    width: 9rem;
+  }
+
+  /* 简历页：与右侧照片同宽 */
+  .emblem-sm {
+    width: 6rem;
+  }
+
+  @media (max-width: 40rem) {
+    .emblem-lg {
+      width: 6.5rem;
+    }
+  }
+</style>

@@ -1,8 +1,8 @@
 ---
-/** 首页扉页：名章、姓名、身份、研究兴趣，以及简介（附小像）与联系方式 */
+/** 首页扉页：校徽（或名章）、姓名、身份、研究兴趣，以及简介（附小像）与联系方式 */
 import { Image } from 'astro:assets';
-import Seal from './Seal.astro';
-import { sealText, type Profile } from '../lib/content';
+import Emblem from './Emblem.astro';
+import type { Profile } from '../lib/content';
 import { paragraphs } from '../lib/inline-md';
 import { SITE } from '../site.config';
 import { useTranslations, type Lang } from '../i18n/ui';
@@ -55,7 +55,7 @@ const links: { href: string; label: string; title?: string; seal?: boolean }[] =
 ---
 
 <section class="hero">
-  <Seal text={sealText(profile)} size="lg" />
+  <Emblem profile={profile} lang={lang} size="lg" />
   <h1 class="hero-name">{name}</h1>
   {altName && altName !== name && <p class:list={['hero-alt', alt]} lang={htmlLang[alt]}>{altName}</p>}
   <div class="ornament" aria-hidden="true"><span></span></div>

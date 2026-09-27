@@ -2,13 +2,13 @@
 import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Icon from '../components/Icon.astro';
-import Seal from '../components/Seal.astro';
+import Emblem from '../components/Emblem.astro';
 import Section from '../components/Section.astro';
 import PubItem from '../components/PubItem.astro';
 import ProjectItem from '../components/ProjectItem.astro';
 import Timeline from '../components/Timeline.astro';
 import SkillGroups from '../components/SkillGroups.astro';
-import { getProfile, getProjects, getPublications, sealText } from '../lib/content';
+import { getProfile, getProjects, getPublications } from '../lib/content';
 import { formatPeriod, formatYearMonth } from '../lib/format';
 import { SITE } from '../site.config';
 import { useTranslations, type Lang } from '../i18n/ui';
@@ -75,7 +75,7 @@ const photo = Object.values(photos)[0];
 <BaseLayout lang={lang} title={t('cv.title')} alternateHref={localizePath('/cv/', alt)}>
   <article class="cv">
     <header class="cv-head">
-      <Seal text={sealText(profile)} size="sm" />
+      <Emblem profile={profile} lang={lang} size="sm" />
       <div class="cv-id">
         <h1>
           {name}
@@ -223,6 +223,9 @@ const photo = Object.values(photos)[0];
 
   .cv-role {
     margin-top: 0.25rem;
+    /* 中文只在「·」处换行，不把校名拆开 */
+    word-break: keep-all;
+    overflow-wrap: anywhere;
     color: var(--ink);
     letter-spacing: 0.06em;
   }
@@ -275,6 +278,11 @@ const photo = Object.values(photos)[0];
     .cv-head {
       align-items: flex-start;
       padding-top: 2.5rem;
+    }
+
+    /* 窄屏放不下三栏，校徽让位给姓名与照片 */
+    .cv-head :global(.emblem) {
+      display: none;
     }
   }
 

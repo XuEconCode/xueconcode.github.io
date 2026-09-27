@@ -14,6 +14,7 @@
   --frame: #e4dccb; /* 书页内框 */
   --seal: #a93a2b; /* ★ 朱砂：印章与强调色，换色改这里（夜读模式下另有一处） */
   --seal-ink: #fbf8f1; /* 印章上的字 */
+  --emblem: #c32e31; /* 校徽标准红（src/assets/emblem.png 只作蒙版，颜色由这里决定） */
   color-scheme: light;
 
   /* 字体：中文宋体（思源宋体），西文与数字 EB Garamond，引文楷体（系统自带） */
@@ -83,6 +84,7 @@
     --frame: #2c2722;
     --seal: #d6664f;
     --seal-ink: #fbf3ea;
+    --emblem: #d86c6c;
     color-scheme: dark;
   }
 }
@@ -98,5 +100,6 @@
   --frame: #2c2722;
   --seal: #d6664f;
   --seal-ink: #fbf3ea;
+  --emblem: #d86c6c;
   color-scheme: dark;
 }
