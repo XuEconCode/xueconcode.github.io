@@ -1,7 +1,6 @@
 ---
-import Seal from './Seal.astro';
 import ThemeToggle from './ThemeToggle.astro';
-import { getProfile, sealText } from '../lib/content';
+import { getProfile } from '../lib/content';
 import { useTranslations, type Lang } from '../i18n/ui';
 import { htmlLang, localizePath, otherLang, stripLang, tx } from '../i18n/utils';
 
@@ -26,10 +25,7 @@ const nav = (['research', 'projects', 'writing', 'cv'] as const).map((key) => ({
 <header class="site-header">
   <div class="shell">
     <div class="header-inner">
-      <a class="brand" href={localizePath('/', lang)}>
-        <Seal text={sealText(profile)} size="xs" />
-        <span class="brand-name">{tx(profile.name, lang)}</span>
-      </a>
+      <a class="brand" href={localizePath('/', lang)}>{tx(profile.name, lang)}</a>
       <nav class="site-nav" aria-label={t('nav.label')}>
         {
           nav.map((item) => (
@@ -65,20 +61,13 @@ const nav = (['research', 'projects', 'writing', 'cv'] as const).map((key) => ({
   }
 
   .brand {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
     color: var(--ink);
-  }
-
-  .brand-name {
-    padding-left: 0.1em;
     font-size: 1rem;
     font-weight: 600;
     letter-spacing: 0.24em;
   }
 
-  :global(:root:lang(en)) .brand-name {
+  :global(:root:lang(en)) .brand {
     font-size: 1.1875rem;
     letter-spacing: 0.04em;
   }

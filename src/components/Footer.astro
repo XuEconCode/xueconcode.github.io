@@ -1,6 +1,5 @@
 ---
-import Seal from './Seal.astro';
-import { getProfile, sealText } from '../lib/content';
+import { getProfile } from '../lib/content';
 import { formatDate } from '../lib/format';
 import { SITE } from '../site.config';
 import { useTranslations, type Lang } from '../i18n/ui';
@@ -20,7 +19,6 @@ const now = new Date();
   <div class="shell">
     <div class="double-rule" aria-hidden="true"></div>
     <div class="footer-inner">
-      <Seal text={sealText(profile)} size="sm" />
       <ul class="dot-list">
         <li>© {now.getUTCFullYear()} {tx(profile.name, lang)}</li>
         <li><a href={localizePath('/rss.xml', lang)}>{t('footer.rss')}</a></li>
@@ -37,10 +35,6 @@ const now = new Date();
   }
 
   .footer-inner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
     padding: 2.5rem 0 5rem;
   }
 

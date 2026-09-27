@@ -2,7 +2,7 @@
 
 中英双语的个人学术主页，用 [Astro](https://astro.build) 生成静态网站，部署在 GitHub Pages。
 
-- 「书卷人文」风格：宣纸底色、思源宋体排版、校徽与朱砂小印，板块以壹、贰、叁编号
+- 「书卷人文」风格：宣纸底色、思源宋体排版、朱砂点缀，首页顶部是校徽，板块以壹、贰、叁编号
 - 中文版在 `/`，英文版在 `/en/`，右上角可以切换语言
 - 页面包括：首页、研究（论文与报告）、项目、文章、可打印简历
 - 支持夜读（深色）模式和数学公式（KaTeX），代码自动高亮
@@ -17,7 +17,7 @@
 | 项目 | `src/content/projects/zh/*.md` 与 `en/*.md` |
 | 文章 | `src/content/writing/zh/*.md` 与 `en/*.md` |
 | 校徽 | `src/assets/emblem.png`（透明底的单色图），显示在首页、简历页和分享卡片上；删掉这张图就换回朱砂名章。颜色由 `src/styles/tokens.css` 的 `--emblem` 决定（日间、夜读各一处） |
-| 名章文字 | 页眉、页脚的小印（没有校徽图时首页也用它）默认取中文名（三字名补「印」，两字名补「之印」）；想自定义就在 `profile.yaml` 加一行 `seal: 四个字` |
+| 名章文字 | 没有校徽图时，首页与简历页显示朱砂名章，默认取中文名（三字名补「印」，两字名补「之印」）；想自定义就在 `profile.yaml` 加一行 `seal: 四个字`。网站图标取名章的第一个字 |
 | 简历 PDF | 放到 `public/cv/`，并在 `profile.yaml` 的 `cv` 中填写路径 |
 | 论文 PDF | 放到 `public/papers/`，在 `publications.yaml` 的 `links.pdf` 中填写 `/papers/文件名.pdf` |
 | 朱砂色（强调色） | `src/styles/tokens.css` 中的 `--seal`（日间、夜读各一处） |

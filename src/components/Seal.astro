@@ -2,11 +2,11 @@
 /**
  * 朱砂名章：把中文名刻成 2×2 印文，按传统从右列读起。
  * 三字名补「印」，两字名补「之印」；也可在 profile.yaml 用 seal 字段直接指定四个字。
- * size="xs" 为单字小印（页眉）。
+ * 目前只在没有校徽图（src/assets/emblem.png）时，由 Emblem 组件在首页与简历页显示。
  */
 interface Props {
   text: string;
-  size?: 'lg' | 'sm' | 'xs';
+  size?: 'lg' | 'sm';
 }
 
 const { text, size = 'lg' } = Astro.props;
@@ -25,7 +25,7 @@ const single = (hasHan ? chars[0] : chars[0]?.toUpperCase()) ?? '';
 ---
 
 {
-  size === 'xs' || cells.length === 0 ? (
+  cells.length === 0 ? (
     <span class:list={['seal', `seal-${size}`, 'seal-single']} aria-hidden="true">
       {single}
     </span>
@@ -98,13 +98,6 @@ const single = (hasHan ? chars[0] : chars[0]?.toUpperCase()) ?? '';
 
   .seal-sm.seal-single {
     font-size: 24px;
-  }
-
-  .seal-xs {
-    width: 30px;
-    height: 30px;
-    border-radius: 4px;
-    font-size: 16px;
   }
 
   @media (max-width: 40rem) {
