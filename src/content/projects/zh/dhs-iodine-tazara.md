@@ -4,7 +4,8 @@ summary: 一次方法练习：用 Claude Code 多 Agent 协作，把人口与健
 date: 2026-07-11
 role: 复现练习 · 数据工程
 tags: [Python, Stata, GIS, Claude Code]
-repo: dhs-iodine-tazara
+links:
+  code: https://github.com/xwh6-0/dhs-iodine-tazara
 featured: true
 order: 1
 ---

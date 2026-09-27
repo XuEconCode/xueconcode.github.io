@@ -4,7 +4,8 @@ summary: A methods exercise — using a team of Claude Code agents to turn clean
 date: 2026-07-11
 role: Replication exercise · Data engineering
 tags: [Python, Stata, GIS, Claude Code]
-repo: dhs-iodine-tazara
+links:
+  code: https://github.com/xwh6-0/dhs-iodine-tazara
 featured: true
 order: 1
 ---
