@@ -1,0 +1,141 @@
+---
+import '@fontsource-variable/eb-garamond';
+import '@fontsource-variable/eb-garamond/wght-italic.css';
+import '@fontsource-variable/noto-serif-sc';
+import '../styles/tokens.css';
+import '../styles/global.css';
+import '../styles/print.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { getProfile } from '../lib/content';
+import { useTranslations, type Lang } from '../i18n/ui';
+import { htmlLang, localizePath, ogLocale, otherLang, tx } from '../i18n/utils';
+
+interface Props {
+  lang: Lang;
+  /** 页面标题（不含姓名）；首页不传 */
+  title?: string;
+  description?: string;
+  /** 另一语言的对应页面；没有译文时传 null */
+  alternateHref: string | null;
+  /** 没有对应页面时，语言切换跳到这里（默认另一语言首页） */
+  fallbackHref?: string;
+  ogType?: 'website' | 'article';
+  publishedTime?: Date;
+  jsonLd?: Record<string, unknown>;
+}
+
+const {
+  lang,
+  title,
+  description,
+  alternateHref,
+  fallbackHref,
+  ogType = 'website',
+  publishedTime,
+  jsonLd,
+} = Astro.props;
+
+const t = useTranslations(lang);
+const profile = await getProfile();
+const alt = otherLang(lang);
+const name = tx(profile.name, lang);
+const fullTitle = title ? `${title} · ${name}` : `${name} · ${t('site.homepage')}`;
+const desc = description ?? [tx(profile.title, lang), tx(profile.affiliation, lang)].filter(Boolean).join(' · ');
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const switchHref = alternateHref ?? fallbackHref ?? localizePath('/', alt);
+const versions = alternateHref ? { [lang]: Astro.url.pathname, [alt]: alternateHref } : null;
+const ogImage = new URL('/og.png', Astro.site);
+const jsonLdText = jsonLd ? JSON.stringify(jsonLd).replace(/</g, '\\u003c') : null;
+---
+
+<!doctype html>
+<html lang={htmlLang[lang]}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    {desc && <meta name="description" content={desc} />}
+    <link rel="canonical" href={canonical} />
+    {
+      versions && (
+        <>
+          <link rel="alternate" hreflang="zh-CN" href={new URL(versions.zh, Astro.site)} />
+          <link rel="alternate" hreflang="en" href={new URL(versions.en, Astro.site)} />
+          <link rel="alternate" hreflang="x-default" href={new URL(versions.zh, Astro.site)} />
+        </>
+      )
+    }
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate" type="application/rss+xml" title={`${name} · RSS`} href={localizePath('/rss.xml', lang)} />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#f3eee3" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1c1916" media="(prefers-color-scheme: dark)" />
+    <meta name="generator" content={Astro.generator} />
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={title ?? name} />
+    {desc && <meta property="og:description" content={desc} />}
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={name} />
+    <meta property="og:locale" content={ogLocale[lang]} />
+    {versions && <meta property="og:locale:alternate" content={ogLocale[alt]} />}
+    <meta property="og:image" content={ogImage} />
+    {publishedTime && <meta property="article:published_time" content={publishedTime.toISOString()} />}
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- 首屏前确定深浅色，避免闪烁 -->
+    <script is:inline>
+      (() => {
+        let theme = null;
+        try {
+          theme = localStorage.getItem('theme');
+        } catch (e) {}
+        if (theme !== 'light' && theme !== 'dark') {
+          theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
+    {jsonLdText && <script type="application/ld+json" set:html={jsonLdText} />}
+  </head>
+  <body>
+    <div class="book">
+      <a class="skip-link" href="#main">{t('skip')}</a>
+      <Header lang={lang} alternateHref={switchHref} />
+      <main id="main" class="shell">
+        <slot />
+      </main>
+      <Footer lang={lang} />
+    </div>
+
+    <script is:inline>
+      (() => {
+        const root = document.documentElement;
+        const button = document.querySelector('[data-theme-toggle]');
+        const sync = () => button && button.setAttribute('aria-pressed', String(root.dataset.theme === 'dark'));
+        sync();
+        if (button) {
+          button.addEventListener('click', () => {
+            const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+            root.dataset.theme = next;
+            try {
+              localStorage.setItem('theme', next);
+            } catch (e) {}
+            sync();
+          });
+        }
+        // 访客没有手动选择时，跟随系统深浅色变化
+        matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
+          let saved = null;
+          try {
+            saved = localStorage.getItem('theme');
+          } catch (e) {}
+          if (saved) return;
+          root.dataset.theme = event.matches ? 'dark' : 'light';
+          sync();
+        });
+      })();
+    </script>
+  </body>
+</html>

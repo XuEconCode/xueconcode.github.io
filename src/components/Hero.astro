@@ -1,0 +1,289 @@
+---
+/** 首页扉页：名章、姓名、身份、研究兴趣，以及简介（附小像）与联系方式 */
+import { Image } from 'astro:assets';
+import Seal from './Seal.astro';
+import { sealText, type Profile } from '../lib/content';
+import { paragraphs } from '../lib/inline-md';
+import { SITE } from '../site.config';
+import { useTranslations, type Lang } from '../i18n/ui';
+import { htmlLang, otherLang, tx } from '../i18n/utils';
+
+interface Props {
+  profile: Profile;
+  lang: Lang;
+}
+
+const { profile, lang } = Astro.props;
+const t = useTranslations(lang);
+const alt = otherLang(lang);
+
+const name = tx(profile.name, lang);
+const altName = tx(profile.name, alt);
+const role = [tx(profile.title, lang), tx(profile.affiliation, lang)].filter(Boolean);
+const interests = profile.interests.map((item) => tx(item, lang));
+const bio = paragraphs(tx(profile.bio, lang));
+
+const brandLabels: Record<string, string> = {
+  github: 'GitHub',
+  scholar: 'Google Scholar',
+  orcid: 'ORCID',
+  linkedin: 'LinkedIn',
+  researchgate: 'ResearchGate',
+  ssrn: 'SSRN',
+  x: 'X',
+  website: lang === 'zh' ? '个人网站' : 'Website',
+};
+
+// GitHub 链接默认由 site.config.ts 的用户名生成，也可在 profile.yaml 中覆盖
+const profileLinks = profile.links.some((link) => link.kind === 'github')
+  ? profile.links
+  : [{ kind: 'github' as const, url: SITE.githubUrl, label: undefined }, ...profile.links];
+const cvPdf = profile.cv?.[lang] ?? profile.cv?.[alt];
+
+// 小像：放在 src/assets/photo.jpg（或 .png / .webp）即显示在简介旁；没有则只显示文字
+const photos = import.meta.glob<ImageMetadata>('../assets/photo.{jpg,jpeg,png,webp,avif}', {
+  eager: true,
+  import: 'default',
+});
+const photo = Object.values(photos)[0];
+
+const links: { href: string; label: string; title?: string; seal?: boolean }[] = [
+  ...(profile.email ? [{ href: `mailto:${profile.email}`, label: t('link.email'), title: profile.email }] : []),
+  ...profileLinks.map((link) => ({ href: link.url, label: link.label ? tx(link.label, lang) : brandLabels[link.kind] })),
+  ...(cvPdf ? [{ href: cvPdf, label: t('link.cvPdf'), seal: true }] : []),
+];
+---
+
+<section class="hero">
+  <Seal text={sealText(profile)} size="lg" />
+  <h1 class="hero-name">{name}</h1>
+  {altName && altName !== name && <p class:list={['hero-alt', alt]} lang={htmlLang[alt]}>{altName}</p>}
+  <div class="ornament" aria-hidden="true"><span></span></div>
+  {
+    role.length > 0 && (
+      <p class="hero-role">
+        {role.map((item, i) => (
+          <>
+            <span class="nowrap">{item}</span>
+            {i < role.length - 1 && <span class="sep"> · </span>}
+          </>
+        ))}
+      </p>
+    )
+  }
+  {
+    interests.length > 0 && (
+      <p class="hero-interests">
+        <span class="sr-only">{t('hero.interests')}：</span>
+        {interests.map((item, i) => (
+          <>
+            <span class="nowrap">{item}</span>
+            {i < interests.length - 1 && <span class="gap"> </span>}
+          </>
+        ))}
+      </p>
+    )
+  }
+</section>
+
+<section class:list={['intro', { 'has-photo': photo }]}>
+  {
+    photo && (
+      <figure class="portrait">
+        <Image src={photo} alt={name} width={176} height={220} densities={[1, 2]} />
+      </figure>
+    )
+  }
+  <div class="intro-text">
+    {bio.map((html) => <p set:html={html} />)}
+    {
+      links.length > 0 && (
+        <ul class="intro-links dot-list">
+          {links.map((link) => (
+            <li>
+              <a href={link.href} title={link.title} class:list={{ seal: link.seal }}>
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5.5rem 0 4rem;
+    text-align: center;
+  }
+
+  .hero-name {
+    margin-top: 2.5rem;
+    padding-left: 0.14em;
+    font-size: var(--text-display);
+    font-weight: 900;
+    line-height: 1.2;
+    letter-spacing: 0.14em;
+  }
+
+  :global(:root:lang(en)) .hero-name {
+    padding-left: 0;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+
+  .hero-alt {
+    margin-top: 0.5rem;
+    color: var(--muted);
+  }
+
+  .hero-alt.en {
+    font-family: var(--font-latin);
+    font-size: 1.6875rem;
+    font-style: italic;
+  }
+
+  .hero-alt.zh {
+    padding-left: 0.2em;
+    font-family: var(--font-serif);
+    font-size: 1.375rem;
+    letter-spacing: 0.2em;
+  }
+
+  .ornament {
+    margin: 2.1rem 0 1.9rem;
+  }
+
+  .hero-role {
+    padding-left: 0.16em;
+    color: var(--ink);
+    font-size: var(--text-base);
+    letter-spacing: 0.16em;
+  }
+
+  .hero-role .sep {
+    color: var(--seal);
+  }
+
+  .hero-interests {
+    margin-top: 0.75rem;
+    padding-left: 0.3em;
+    color: var(--muted);
+    font-size: 0.96875rem;
+    letter-spacing: 0.3em;
+  }
+
+  .hero-interests .gap {
+    margin-inline: 0.5em;
+  }
+
+  :global(:root:lang(en)) .hero-role {
+    padding-left: 0;
+    letter-spacing: 0.02em;
+  }
+
+  :global(:root:lang(en)) .hero-interests {
+    padding-left: 0;
+    font-family: var(--font-latin);
+    font-size: 1.1875rem;
+    font-style: italic;
+    letter-spacing: 0.01em;
+  }
+
+  .intro.has-photo {
+    display: grid;
+    grid-template-columns: 11rem minmax(0, 1fr);
+    align-items: start;
+    gap: 2.25rem;
+  }
+
+  .portrait {
+    margin: 0;
+    padding: 0.5rem;
+    border: 1px solid var(--line);
+    background: var(--paper-light);
+  }
+
+  .portrait :global(img) {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    filter: sepia(0.12) saturate(0.95);
+  }
+
+  :global([data-theme='dark']) .portrait :global(img) {
+    filter: sepia(0.15) brightness(0.88);
+  }
+
+  .has-photo .intro-links {
+    justify-content: flex-start;
+  }
+
+  .intro p {
+    color: var(--text);
+  }
+
+  .intro p + p {
+    margin-top: 0.6em;
+  }
+
+  .intro:lang(zh) p {
+    text-align: justify;
+    text-indent: 2em;
+  }
+
+  .intro-links {
+    justify-content: center;
+    margin-top: 2.5rem;
+    font-size: 0.96875rem;
+    letter-spacing: 0.08em;
+  }
+
+  :global(:root:lang(en)) .intro-links {
+    font-size: 1.125rem;
+    letter-spacing: 0.02em;
+  }
+
+  .intro-links a {
+    color: var(--ink);
+  }
+
+  .intro-links a:hover,
+  .intro-links a.seal {
+    color: var(--seal);
+  }
+
+  @media (max-width: 40rem) {
+    .hero {
+      padding: 3.25rem 0 3rem;
+    }
+
+    .hero-name {
+      margin-top: 2rem;
+      letter-spacing: 0.1em;
+    }
+
+    .hero-interests {
+      letter-spacing: 0.2em;
+    }
+
+    .intro.has-photo {
+      grid-template-columns: 1fr;
+      gap: 1.75rem;
+    }
+
+    .portrait {
+      width: 9.5rem;
+      margin-inline: auto;
+    }
+
+    .has-photo .intro-links {
+      justify-content: center;
+    }
+  }
+</style>

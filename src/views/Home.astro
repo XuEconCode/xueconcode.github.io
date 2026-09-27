@@ -1,0 +1,208 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import Section from '../components/Section.astro';
+import PubItem from '../components/PubItem.astro';
+import ProjectItem from '../components/ProjectItem.astro';
+import Timeline from '../components/Timeline.astro';
+import SkillGroups from '../components/SkillGroups.astro';
+import PostList from '../components/PostList.astro';
+import { getPostList, getProfile, getProjects, getPublications } from '../lib/content';
+import { formatPeriod, formatYearMonth } from '../lib/format';
+import { personJsonLd } from '../lib/seo';
+import { useTranslations, type Lang } from '../i18n/ui';
+import { localizePath, otherLang, quoteTitle, tx } from '../i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const tAlt = useTranslations(otherLang(lang));
+const profile = await getProfile();
+
+// 标了 featured 的条目优先；都没标时取前几条
+const pubs = await getPublications();
+const featuredPubs = pubs.some((p) => p.data.featured) ? pubs.filter((p) => p.data.featured) : pubs.slice(0, 4);
+const projects = await getProjects(lang);
+const featuredProjects = projects.some((p) => p.data.featured)
+  ? projects.filter((p) => p.data.featured)
+  : projects.slice(0, 2);
+const posts = (await getPostList(lang)).slice(0, 3);
+
+const news = profile.news.map((item) => ({ when: formatYearMonth(item.date, lang), title: tx(item.text, lang) }));
+const education = profile.education.map((item) => ({
+  when: formatPeriod(item.start, item.end, lang),
+  title: tx(item.school, lang),
+  subtitle: tx(item.degree, lang),
+  details: item.details.map((d) => tx(d, lang)),
+}));
+const experience = profile.experience.map((item) => ({
+  when: formatPeriod(item.start, item.end, lang),
+  title: tx(item.org, lang),
+  subtitle: tx(item.role, lang),
+  details: item.details.map((d) => tx(d, lang)),
+}));
+const grants = profile.grants.map((item) => ({
+  when: tx(item.role, lang),
+  title: quoteTitle(tx(item.title, lang), lang),
+  subtitle: tx(item.funder, lang),
+}));
+const honors = profile.honors.map((item) => ({
+  when: item.when ?? formatYearMonth(item.year!, lang),
+  title: tx(item.title, lang),
+  subtitle: tx(item.org, lang) || undefined,
+}));
+
+// 「履历」两栏：左栏教育与荣誉，右栏科研课题与经历
+const columns = [
+  [
+    { title: t('section.educationShort'), items: education },
+    { title: t('section.honors'), items: honors },
+  ],
+  [
+    { title: t('section.grants'), items: grants },
+    { title: t('section.experience'), items: experience },
+  ],
+].map((column) => column.filter((block) => block.items.length > 0));
+const hasCurriculum = columns.some((column) => column.length > 0);
+
+// 板块按实际显示的顺序编号：壹、贰、叁……
+const shown = [
+  news.length > 0 && 'news',
+  featuredPubs.length > 0 && 'research',
+  featuredProjects.length > 0 && 'projects',
+  hasCurriculum && 'curriculum',
+  profile.skills.length > 0 && 'skills',
+  posts.length > 0 && 'writing',
+].filter(Boolean);
+const index = (key: string) => shown.indexOf(key);
+---
+
+<BaseLayout lang={lang} alternateHref={localizePath('/', otherLang(lang))} jsonLd={personJsonLd(profile, lang)}>
+  <Hero profile={profile} lang={lang} />
+
+  {
+    news.length > 0 && (
+      <Section id="news" lang={lang} title={t('section.news')} subtitle={tAlt('section.news')} index={index('news')}>
+        <Timeline items={news} plain />
+      </Section>
+    )
+  }
+
+  {
+    featuredPubs.length > 0 && (
+      <Section
+        id="research"
+        lang={lang}
+        title={t('nav.research')}
+        subtitle={tAlt('nav.research')}
+        index={index('research')}
+        moreHref={localizePath('/research/', lang)}
+        moreLabel={t('more')}
+      >
+        {featuredPubs.map((pub, i) => (
+          <PubItem pub={pub} lang={lang} n={i + 1} showType />
+        ))}
+      </Section>
+    )
+  }
+
+  {
+    featuredProjects.length > 0 && (
+      <Section
+        id="projects"
+        lang={lang}
+        title={t('nav.projects')}
+        subtitle={tAlt('nav.projects')}
+        index={index('projects')}
+        moreHref={localizePath('/projects/', lang)}
+        moreLabel={t('more')}
+      >
+        {featuredProjects.map((project) => (
+          <ProjectItem project={project} lang={lang} />
+        ))}
+      </Section>
+    )
+  }
+
+  {
+    hasCurriculum && (
+      <Section
+        id="curriculum"
+        lang={lang}
+        title={t('section.curriculum')}
+        subtitle={tAlt('section.curriculum')}
+        index={index('curriculum')}
+      >
+        <div class="curriculum">
+          {columns.map((column) => (
+            <div>
+              {column.map((block) => (
+                <div class="block">
+                  <h3 class="col-title">{block.title}</h3>
+                  <Timeline items={block.items} />
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </Section>
+    )
+  }
+
+  {
+    profile.skills.length > 0 && (
+      <Section id="skills" lang={lang} title={t('section.skills')} subtitle={tAlt('section.skills')} index={index('skills')}>
+        <SkillGroups skills={profile.skills} lang={lang} />
+      </Section>
+    )
+  }
+
+  {
+    posts.length > 0 && (
+      <Section
+        id="writing"
+        lang={lang}
+        title={t('nav.writing')}
+        subtitle={tAlt('nav.writing')}
+        index={index('writing')}
+        moreHref={localizePath('/writing/', lang)}
+        moreLabel={t('more')}
+      >
+        <PostList posts={posts} lang={lang} />
+      </Section>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .curriculum {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 3.5rem;
+  }
+
+  .block + .block {
+    margin-top: 2.75rem;
+  }
+
+  .col-title {
+    margin-bottom: 1rem;
+    font-size: 1.125rem;
+    letter-spacing: 0.2em;
+  }
+
+  :global(:root:lang(en)) .col-title {
+    font-size: 1.25rem;
+    letter-spacing: 0.02em;
+  }
+
+  @media (max-width: 40rem) {
+    .curriculum {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+    }
+  }
+</style>

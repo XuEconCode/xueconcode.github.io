@@ -1,0 +1,77 @@
+---
+import type { Profile } from '../lib/content';
+import type { Lang } from '../i18n/ui';
+import { tx } from '../i18n/utils';
+
+interface Props {
+  skills: Profile['skills'];
+  lang: Lang;
+}
+
+const { skills, lang } = Astro.props;
+---
+
+<dl class="skills">
+  {
+    skills.map((group) => {
+      const items = group.items.map((item) => tx(item, lang));
+      return (
+        <div class="skill-row">
+          <dt>{tx(group.group, lang)}</dt>
+          <dd>
+            {items.map((item, i) => (
+              <>
+                <span class="nowrap">{item}</span>
+                {i < items.length - 1 && <span class="sep">·</span>}
+              </>
+            ))}
+          </dd>
+        </div>
+      );
+    })
+  }
+</dl>
+
+<style>
+  .skill-row {
+    display: grid;
+    grid-template-columns: 8.5rem minmax(0, 1fr);
+    gap: 0 1.5rem;
+    line-height: 1.8;
+  }
+
+  .skill-row + .skill-row {
+    margin-top: 0.75rem;
+  }
+
+  dt {
+    color: var(--seal);
+    font-size: 1rem;
+    letter-spacing: 0.14em;
+  }
+
+  :global(:root:lang(en)) dt {
+    letter-spacing: 0.02em;
+  }
+
+  dd {
+    font-size: 1.03125rem;
+  }
+
+  .sep {
+    margin-inline: 0.75em;
+    color: var(--seal);
+  }
+
+  @media (max-width: 40rem) {
+    .skill-row {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media print {
+    .skill-row + .skill-row {
+      margin-top: 0.1rem;
+    }
+  }
+</style>

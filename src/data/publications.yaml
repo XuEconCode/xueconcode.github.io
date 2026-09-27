@@ -1,0 +1,68 @@
+# ============================================================
+# 论文与报告：研究页、首页「研究」板块、简历页都从这里读取
+#
+# - 每条必须有唯一的 id（英文、数字、短横线），研究页用它做锚点
+# - type：publication 已发表 | working-paper 工作论文 | in-progress 进行中 | report 报告
+# - authors 写完整署名（自己的名字自动加粗）；只想写合作者时用 coauthors
+# - 同一类型内，页面顺序与本文件中的顺序一致
+# - featured: true 的条目会出现在首页（都没标时首页显示前 4 条）
+# - 论文 PDF 放到 public/papers/ 下，links.pdf 写成 /papers/文件名.pdf（注意期刊版权）
+# ============================================================
+
+- id: platform-employment-2026
+  type: publication
+  title:
+    zh: 平台经济新业态何以促进居民就业——基于包容性就业的视角
+    en: "New Forms of Platforms Economy and Individual Employment in China: Perspective from Inclusive Employment"
+  authors:
+    - { zh: 何小钢, en: Xiaogang He }
+    - { zh: 许雯宏, en: Wenhong Xu }
+    - { zh: 滕瑞丰, en: Ruifeng Teng }
+  venue: { zh: 《南开经济研究》, en: Nankai Economic Studies }
+  status: { zh: 2026 年第 3 期, en: "2026, No. 3" }
+  abstract:
+    zh: >-
+      基于城市地图信息、天眼查企业信息和家庭金融调查数据匹配的独特样本，本文利用美团等外卖生活服务平台入驻各城市的时间差异，
+      采用渐进倍差法证实：平台入驻通过降低搜寻成本、增加灵活就业和消费拉动就业等渠道，显著提升城市个体就业水平。
+      平台还具有包容性就业效应，为在性别、年龄、户籍方面存在就业劣势的群体带来广泛就业机会，并发挥高低技能劳动力的就业互补效应；
+      其就业促进效应取决于个体所在地的网络基础设施和市场化水平。本文还测算了平台引致的就业收入规模，揭示了平台为居民收入增加带来的正外部性。
+    en: >-
+      Using a unique sample that matches urban point-of-interest data, enterprise registration records and the China
+      Household Finance Survey, and exploiting the staggered entry of food-delivery platforms such as Meituan across
+      cities, we show that platform entry significantly raises individual employment, mainly by lowering job-search
+      costs, expanding flexible employment and stimulating consumption-driven jobs. The effect is inclusive: it opens
+      opportunities for groups disadvantaged by gender, age, skills or registered residence, and it fosters
+      complementary employment between high- and low-skilled workers. Its magnitude depends on local internet
+      infrastructure and marketization, and the income it creates points to sizeable positive externalities.
+  links:
+    paper: https://doi.org/10.14116/j.nkes.2026.03.004
+  bibtex: |
+    @article{he2026platform,
+      title   = {平台经济新业态何以促进居民就业——基于包容性就业的视角},
+      author  = {何小钢 and 许雯宏 and 滕瑞丰},
+      journal = {南开经济研究},
+      year    = {2026},
+      number  = {3},
+      pages   = {65--82},
+      doi     = {10.14116/j.nkes.2026.03.004}
+    }
+  featured: true
+
+- id: ai-exposure-china
+  type: working-paper
+  title: "Measuring AI Exposure in China: Worker-Level Evidence on Job Transitions and Inequality"
+  featured: true
+
+- id: blockchain-dairy-supply-chain
+  type: publication
+  title:
+    zh: 区块链赋能乳制品供应链质量安全监测研究
+    en: Blockchain-Enabled Quality and Safety Monitoring of the Dairy Supply Chain (in Chinese)
+  venue: { zh: 北大核心期刊, en: PKU Core Journal }
+
+- id: blockchain-cold-chain-platform
+  type: publication
+  title:
+    zh: 基于区块链的食品冷链质量安全信息平台构建
+    en: A Blockchain-Based Information Platform for Food Cold-Chain Quality and Safety (in Chinese)
+  venue: { zh: 北大核心期刊, en: PKU Core Journal }

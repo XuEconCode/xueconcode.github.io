@@ -1,0 +1,102 @@
+/* ============================================================
+   设计令牌「书卷人文」：宣纸底、墨色字、朱砂印。改这里即可全站生效。
+   ============================================================ */
+
+:root {
+  /* 颜色（日间） */
+  --paper: #f3eee3; /* 宣纸底色 */
+  --paper-light: #fbf8f1; /* 插图衬底、代码块 */
+  --ink: #2a2521; /* 墨色：标题与强调 */
+  --text: #3e3731; /* 正文 */
+  --muted: #6f6358; /* 次要文字 */
+  --rule: #cbbfa9; /* 双线与装饰线 */
+  --line: #d6cbb8; /* 细线、虚线、外框 */
+  --frame: #e4dccb; /* 书页内框 */
+  --seal: #a93a2b; /* ★ 朱砂：印章与强调色，换色改这里（夜读模式下另有一处） */
+  --seal-ink: #fbf8f1; /* 印章上的字 */
+  color-scheme: light;
+
+  /* 字体：中文宋体（思源宋体），西文与数字 EB Garamond，引文楷体（系统自带） */
+  --font-serif: "Noto Serif SC Variable", "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC", "STSong",
+    "SimSun", serif;
+  --font-latin: "EB Garamond Variable", "Noto Serif SC Variable", Georgia, serif;
+  --font-kai: "Kaiti SC", "STKaiti", "KaiTi", "BiauKai", var(--font-serif);
+  --font-mono: ui-monospace, "SFMono-Regular", "Cascadia Code", Menlo, Consolas, monospace;
+  --font-body: var(--font-serif);
+
+  /* 字号 */
+  --text-xs: 0.8125rem; /* 13px */
+  --text-sm: 0.9375rem; /* 15px */
+  --text-base: 1.125rem; /* 18px 正文 */
+  --text-lg: 1.25rem; /* 20px */
+  --text-xl: 1.625rem; /* 26px */
+  --text-2xl: 1.875rem; /* 30px 板块标题 */
+  --text-3xl: 2.25rem; /* 36px 页面标题 */
+  --text-display: 4rem; /* 64px 首页姓名 */
+  --leading: 2;
+  --track: 0.16em; /* 标题字距 */
+
+  /* 版心与间距 */
+  --measure: 47.5rem; /* 760px */
+  --gutter: 1.5rem;
+  --section-gap: 6rem;
+  --radius: 4px;
+  --ease: 150ms ease;
+}
+
+/* 英文页：正文用 EB Garamond，字号略大（Garamond 字面较小） */
+:root:lang(en) {
+  --font-body: var(--font-latin);
+  --text-base: 1.25rem;
+  --leading: 1.7;
+  --track: 0.04em;
+}
+
+@media (max-width: 40rem) {
+  :root {
+    --text-base: 1.0625rem;
+    --text-xl: 1.375rem;
+    --text-2xl: 1.5rem;
+    --text-3xl: 1.75rem;
+    --text-display: 2.75rem;
+    --leading: 1.95;
+    --gutter: 1.25rem;
+    --section-gap: 4.5rem;
+  }
+
+  :root:lang(en) {
+    --text-base: 1.1875rem;
+    --leading: 1.65;
+  }
+}
+
+/* 夜读模式：未手动选择时跟随系统；手动选择后以 data-theme 为准 */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #1c1916;
+    --paper-light: #24201c;
+    --ink: #ede6da;
+    --text: #d9d0c2;
+    --muted: #a69a8b;
+    --rule: #4a4239;
+    --line: #3d362f;
+    --frame: #2c2722;
+    --seal: #d6664f;
+    --seal-ink: #fbf3ea;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --paper: #1c1916;
+  --paper-light: #24201c;
+  --ink: #ede6da;
+  --text: #d9d0c2;
+  --muted: #a69a8b;
+  --rule: #4a4239;
+  --line: #3d362f;
+  --frame: #2c2722;
+  --seal: #d6664f;
+  --seal-ink: #fbf3ea;
+  color-scheme: dark;
+}

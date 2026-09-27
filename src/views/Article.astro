@@ -1,0 +1,164 @@
+---
+import 'katex/dist/katex.min.css';
+import '../styles/prose.css';
+import { render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Toc from '../components/Toc.astro';
+import { getPosts, hasVersion, parseId, type Post } from '../lib/content';
+import { formatDate, isoDate, readingMinutes } from '../lib/format';
+import { useTranslations, type Lang } from '../i18n/ui';
+import { localizePath, otherLang } from '../i18n/utils';
+
+interface Props {
+  entry: Post;
+  lang: Lang;
+}
+
+const { entry, lang } = Astro.props;
+const t = useTranslations(lang);
+const { data } = entry;
+const { slug } = parseId(entry.id);
+const { Content, headings } = await render(entry);
+const alt = otherLang(lang);
+const hasAlt = await hasVersion('writing', slug, alt);
+const listHref = localizePath('/writing/', lang);
+
+// 同语言文章按日期倒序：上一篇 = 更早，下一篇 = 更新
+const posts = await getPosts(lang);
+const index = posts.findIndex((post) => post.id === entry.id);
+const older = index >= 0 ? posts[index + 1] : undefined;
+const newer = index > 0 ? posts[index - 1] : undefined;
+const postHref = (post: Post) => localizePath(`/writing/${parseId(post.id).slug}/`, lang);
+---
+
+<BaseLayout
+  lang={lang}
+  title={data.title}
+  description={data.description}
+  ogType="article"
+  publishedTime={data.date}
+  alternateHref={hasAlt ? localizePath(`/writing/${slug}/`, alt) : null}
+  fallbackHref={localizePath('/writing/', alt)}
+>
+  <article>
+    <header class="page-head article-head">
+      <p class="eyebrow"><a href={listHref}>{t('writing.title')}</a></p>
+      <h1>{data.title}</h1>
+      <div class="ornament" aria-hidden="true"><span></span></div>
+      <p class="lede">{data.description}</p>
+      <ul class="meta dot-list">
+        <li><time datetime={isoDate(data.date)}>{formatDate(data.date, lang)}</time></li>
+        {data.updated && <li>{t('writing.updated', { date: formatDate(data.updated, lang) })}</li>}
+        <li>{t('writing.minutes', { n: readingMinutes(entry.body ?? '') })}</li>
+      </ul>
+    </header>
+
+    <div class="article-body">
+      <Toc headings={headings} title={t('writing.toc')} variant="inline" />
+      <div class="prose">
+        <Content />
+      </div>
+      <aside class="article-aside">
+        <Toc headings={headings} title={t('writing.toc')} variant="side" />
+      </aside>
+    </div>
+
+    <footer class="page-foot">
+      {
+        (older || newer) && (
+          <nav class="post-nav" aria-label={`${t('writing.prev')} / ${t('writing.next')}`}>
+            {older && (
+              <a class="prev" rel="prev" href={postHref(older)}>
+                <span class="label">← {t('writing.prev')}</span>
+                {older.data.title}
+              </a>
+            )}
+            {newer && (
+              <a class="next" rel="next" href={postHref(newer)}>
+                <span class="label">{t('writing.next')} →</span>
+                {newer.data.title}
+              </a>
+            )}
+          </nav>
+        )
+      }
+      <a href={listHref}>← {t('writing.back')}</a>
+    </footer>
+  </article>
+</BaseLayout>
+
+<style>
+  .article-head h1 {
+    padding-left: 0.06em;
+    font-size: 2.125rem;
+    letter-spacing: 0.06em;
+  }
+
+  :global(:root:lang(en)) .article-head h1 {
+    padding-left: 0;
+    letter-spacing: 0;
+  }
+
+  .article-body {
+    position: relative;
+  }
+
+  /* 宽屏：目录放在正文右侧的页边 */
+  .article-aside {
+    position: absolute;
+    top: 0;
+    left: calc(100% + 2.5rem);
+    width: 11rem;
+    height: 100%;
+  }
+
+  @media (max-width: 81.99rem) {
+    .article-aside {
+      display: none;
+    }
+  }
+
+  @media (max-width: 40rem) {
+    .article-head h1 {
+      font-size: var(--text-3xl);
+    }
+  }
+
+  .post-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.75rem;
+    text-align: left;
+  }
+
+  .post-nav a {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    color: var(--ink);
+    letter-spacing: 0.02em;
+  }
+
+  .post-nav a:hover {
+    color: var(--seal);
+  }
+
+  .post-nav .next {
+    grid-column: 2;
+    text-align: right;
+  }
+
+  .post-nav .label {
+    color: var(--muted);
+    font-size: var(--text-xs);
+    letter-spacing: 0.12em;
+  }
+
+  @media print {
+    .article-aside,
+    .page-foot {
+      display: none;
+    }
+  }
+</style>

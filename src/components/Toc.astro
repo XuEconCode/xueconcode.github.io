@@ -1,0 +1,118 @@
+---
+/** 文章目录：窄屏显示为可折叠块，宽屏显示在正文右侧（两处共用此组件） */
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+  headings: MarkdownHeading[];
+  title: string;
+  variant: 'inline' | 'side';
+}
+
+const { headings, title, variant } = Astro.props;
+const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+
+{
+  items.length >= 3 &&
+    (variant === 'inline' ? (
+      <details class="toc toc-inline">
+        <summary>{title}</summary>
+        <ol>
+          {items.map((h) => (
+            <li class={`depth-${h.depth}`}>
+              <a href={`#${h.slug}`}>{h.text}</a>
+            </li>
+          ))}
+        </ol>
+      </details>
+    ) : (
+      <nav class="toc toc-side" aria-label={title}>
+        <p class="toc-title">{title}</p>
+        <ol>
+          {items.map((h) => (
+            <li class={`depth-${h.depth}`}>
+              <a href={`#${h.slug}`}>{h.text}</a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+    ))
+}
+
+<style>
+  .toc {
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+
+  .toc ol {
+    padding: 0;
+    list-style: none;
+  }
+
+  .toc li + li {
+    margin-top: 0.45rem;
+  }
+
+  .toc .depth-3 {
+    padding-left: 1em;
+  }
+
+  .toc a {
+    color: var(--muted);
+  }
+
+  .toc a:hover {
+    color: var(--seal);
+  }
+
+  .toc-inline {
+    margin-bottom: 2.5rem;
+    padding: 0.9rem 1.2rem;
+    border: 1px solid var(--line);
+    background: var(--paper-light);
+  }
+
+  .toc-inline summary {
+    color: var(--ink);
+    letter-spacing: 0.3em;
+    cursor: pointer;
+  }
+
+  .toc-inline ol {
+    margin-top: 0.75rem;
+  }
+
+  .toc-title {
+    margin-bottom: 0.9rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--rule);
+    color: var(--ink);
+    letter-spacing: 0.3em;
+  }
+
+  .toc-side {
+    position: sticky;
+    top: 3rem;
+    max-height: calc(100vh - 6rem);
+    overflow-y: auto;
+  }
+
+  @media (min-width: 82rem) {
+    .toc-inline {
+      display: none;
+    }
+  }
+
+  @media (max-width: 81.99rem) {
+    .toc-side {
+      display: none;
+    }
+  }
+
+  @media print {
+    .toc {
+      display: none;
+    }
+  }
+</style>

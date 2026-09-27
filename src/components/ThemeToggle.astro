@@ -1,0 +1,53 @@
+---
+import Icon from './Icon.astro';
+
+interface Props {
+  label: string;
+}
+
+const { label } = Astro.props;
+---
+
+<button type="button" class="theme-toggle" data-theme-toggle aria-label={label} aria-pressed="false" title={label}>
+  <Icon name="moon" class="icon-moon" />
+  <Icon name="sun" class="icon-sun" />
+</button>
+
+<style>
+  .theme-toggle {
+    display: inline-grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    color: var(--muted);
+    font-size: 1.05rem;
+    cursor: pointer;
+    transition: color var(--ease);
+  }
+
+  .theme-toggle:hover {
+    color: var(--seal);
+  }
+
+  .theme-toggle :global(.icon) {
+    grid-area: 1 / 1;
+  }
+
+  .theme-toggle :global(.icon-sun),
+  :global([data-theme='dark']) .theme-toggle :global(.icon-moon) {
+    display: none;
+  }
+
+  :global([data-theme='dark']) .theme-toggle :global(.icon-sun) {
+    display: inline-block;
+  }
+
+  /* 未启用 JavaScript 时按钮无效，隐藏之（此时仍跟随系统深浅色） */
+  :global(html:not([data-theme])) .theme-toggle {
+    display: none;
+  }
+</style>

@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectItem from '../components/ProjectItem.astro';
+import { getProjects } from '../lib/content';
+import { useTranslations, type Lang } from '../i18n/ui';
+import { htmlLang, localizePath, otherLang } from '../i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const alt = otherLang(lang);
+const t = useTranslations(lang);
+const tAlt = useTranslations(alt);
+const projects = await getProjects(lang);
+---
+
+<BaseLayout
+  lang={lang}
+  title={t('projects.title')}
+  description={t('projects.description')}
+  alternateHref={localizePath('/projects/', alt)}
+>
+  <header class="page-head">
+    <h1>{t('projects.title')}</h1>
+    <p class="subtitle" lang={htmlLang[alt]}>{tAlt('projects.title')}</p>
+    <div class="ornament" aria-hidden="true"><span></span></div>
+    <p class="lede">{t('projects.description')}</p>
+  </header>
+
+  {projects.map((project) => <ProjectItem project={project} lang={lang} />)}
+</BaseLayout>

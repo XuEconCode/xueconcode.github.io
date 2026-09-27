@@ -1,0 +1,18 @@
+# 依赖与构建产物
+node_modules/
+dist/
+.astro/
+
+# 素材收件箱：简历原稿、照片原图等，不入库
+_inbox/
+
+# 系统与编辑器
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+
+# 本地环境
+.env
+.env.*
+npm-debug.log*

@@ -1,0 +1,23 @@
+---
+/**
+ * 带图注的图片（在 .mdx 中使用）：
+ *   import Figure from '../../../components/Figure.astro';
+ *   import map from './map.png';
+ *   <Figure src={map} alt="受访者分布" caption="图 1　受访者分布" />
+ * 普通 .md 文件直接写 ![替代文字](./map.png "图注") 即可，效果相同。
+ */
+import { Image } from 'astro:assets';
+
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  caption?: string;
+}
+
+const { src, alt, caption } = Astro.props;
+---
+
+<figure>
+  <Image src={src} alt={alt} widths={[680, 1360]} sizes="(min-width: 44rem) 680px, 100vw" />
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>

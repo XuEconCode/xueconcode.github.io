@@ -1,0 +1,134 @@
+---
+/**
+ * 板块：编号（壹贰叁… / I II III…）+ 标题 + 另一语言的副标题 + 双细线。
+ */
+import type { Lang } from '../i18n/ui';
+import { htmlLang, otherLang } from '../i18n/utils';
+
+interface Props {
+  id: string;
+  lang: Lang;
+  title: string;
+  /** 另一种语言的标题，作为副标题 */
+  subtitle?: string;
+  /** 第几个板块（从 0 开始），决定编号 */
+  index?: number;
+  /** 右侧「查看全部」链接 */
+  moreHref?: string;
+  moreLabel?: string;
+}
+
+const { id, lang, title, subtitle, index, moreHref, moreLabel } = Astro.props;
+const numerals = {
+  zh: ['壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖', '拾'],
+  en: ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'],
+};
+const numeral = index === undefined ? undefined : numerals[lang][index];
+const subLang = otherLang(lang);
+---
+
+<section class="section" id={id} aria-labelledby={`${id}-title`}>
+  <div class="section-head">
+    {numeral && <span class:list={['numeral', { latin: lang === 'en' }]} aria-hidden="true">{numeral}</span>}
+    <h2 id={`${id}-title`}>{title}</h2>
+    {subtitle && <span class:list={['section-sub', subLang]} lang={htmlLang[subLang]}>{subtitle}</span>}
+    <span class="double-rule section-rule" aria-hidden="true"></span>
+    {moreHref && <a class="section-more" href={moreHref}>{moreLabel} →</a>}
+  </div>
+  <slot />
+</section>
+
+<style>
+  .section {
+    margin-top: var(--section-gap);
+  }
+
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .numeral {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border: 1.5px solid var(--seal);
+    border-radius: var(--radius);
+    color: var(--seal);
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .numeral.latin {
+    font-family: var(--font-latin);
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  h2 {
+    font-size: var(--text-2xl);
+    letter-spacing: var(--track);
+    white-space: nowrap;
+  }
+
+  .section-sub {
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .section-sub.en {
+    font-family: var(--font-latin);
+    font-size: 1.3rem;
+    font-style: italic;
+  }
+
+  .section-sub.zh {
+    font-family: var(--font-serif);
+    font-size: 1rem;
+    letter-spacing: 0.2em;
+  }
+
+  .section-rule {
+    flex: 1;
+    min-width: 1.5rem;
+  }
+
+  .section-more {
+    color: var(--muted);
+    font-size: var(--text-sm);
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+
+  .section-more:hover {
+    color: var(--seal);
+  }
+
+  @media (max-width: 30rem) {
+    .section-sub {
+      display: none;
+    }
+  }
+
+  @media print {
+    .section-head {
+      margin-bottom: 0.75rem;
+      break-after: avoid;
+    }
+
+    .numeral {
+      width: 26px;
+      height: 26px;
+      font-size: 13px;
+    }
+
+    .section-more {
+      display: none;
+    }
+  }
+</style>

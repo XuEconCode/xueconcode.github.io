@@ -1,0 +1,29 @@
+---
+/** 论文 / 项目的资源链接：中文页显示为〔全文 PDF〕〔代码〕，英文页为 [PDF] [Code] */
+import { useTranslations, type Lang } from '../i18n/ui';
+import { bracket } from '../i18n/utils';
+
+type Kind = 'paper' | 'pdf' | 'code' | 'data' | 'slides' | 'url';
+
+interface Props {
+  links: Partial<Record<Kind, string>>;
+  lang: Lang;
+}
+
+const { links, lang } = Astro.props;
+const t = useTranslations(lang);
+const order: Kind[] = ['paper', 'pdf', 'code', 'data', 'slides', 'url'];
+const items = order.flatMap((kind) => (links[kind] ? [{ kind, href: links[kind] }] : []));
+---
+
+{
+  items.length > 0 && (
+    <ul class="res-links">
+      {items.map(({ kind, href }) => (
+        <li>
+          <a href={href}>{bracket(t(`link.${kind}`), lang)}</a>
+        </li>
+      ))}
+    </ul>
+  )
+}

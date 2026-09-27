@@ -1,0 +1,81 @@
+---
+/** 主要发现：居中的引文，中文用「」，英文用 “ ”，下方一行统计量 */
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  text: string;
+  stats?: string;
+  lang: Lang;
+  label: string;
+  /** 列表中使用的紧凑样式 */
+  compact?: boolean;
+}
+
+const { text, stats, lang, label, compact = false } = Astro.props;
+const [open, close] = lang === 'zh' ? ['「', '」'] : ['“', '”'];
+---
+
+<blockquote class:list={['key-result', { compact }]} aria-label={label}>
+  <p class="key-text"><span class="mark">{open}</span>{text}<span class="mark">{close}</span></p>
+  {stats && <p class="key-stats">{stats}</p>}
+</blockquote>
+
+<style>
+  .key-result {
+    margin: 2.25rem 0;
+    padding: 1.9rem 3rem;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    text-align: center;
+  }
+
+  .key-text {
+    color: var(--ink);
+    font-size: 1.4375rem;
+    font-weight: 600;
+    line-height: 1.7;
+    letter-spacing: 0.06em;
+    text-wrap: balance;
+  }
+
+  :global(:root:lang(en)) .key-text {
+    font-size: 1.5rem;
+    letter-spacing: 0;
+  }
+
+  .mark {
+    color: var(--seal);
+  }
+
+  .key-stats {
+    margin-top: 0.6rem;
+    color: var(--muted);
+    font-family: var(--font-latin);
+    font-size: 1.25rem;
+    font-style: italic;
+  }
+
+  .compact {
+    margin: 1.75rem 0 0;
+    padding: 1.4rem 1.5rem;
+  }
+
+  .compact .key-text {
+    font-size: 1.25rem;
+  }
+
+  .compact .key-stats {
+    font-size: 1.125rem;
+  }
+
+  @media (max-width: 40rem) {
+    .key-result {
+      padding: 1.5rem 0.5rem;
+    }
+
+    .key-text {
+      font-size: 1.25rem;
+      letter-spacing: 0.03em;
+    }
+  }
+</style>

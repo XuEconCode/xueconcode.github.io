@@ -1,0 +1,118 @@
+---
+/**
+ * 朱砂名章：把中文名刻成 2×2 印文，按传统从右列读起。
+ * 三字名补「印」，两字名补「之印」；也可在 profile.yaml 用 seal 字段直接指定四个字。
+ * size="xs" 为单字小印（页眉）。
+ */
+interface Props {
+  text: string;
+  size?: 'lg' | 'sm' | 'xs';
+}
+
+const { text, size = 'lg' } = Astro.props;
+const chars = Array.from(text.replace(/\s+/g, ''));
+const hasHan = chars.some((c) => /\p{Script=Han}/u.test(c));
+
+let four: string[] = [];
+if (hasHan) {
+  if (chars.length >= 4) four = chars.slice(0, 4);
+  else if (chars.length === 3) four = [...chars, '印'];
+  else if (chars.length === 2) four = [...chars, '之', '印'];
+}
+// 读序：右列自上而下，再左列自上而下 → 网格（逐行填充）顺序为 [3, 1, 4, 2]
+const cells = four.length === 4 ? [four[2], four[0], four[3], four[1]] : [];
+const single = (hasHan ? chars[0] : chars[0]?.toUpperCase()) ?? '';
+---
+
+{
+  size === 'xs' || cells.length === 0 ? (
+    <span class:list={['seal', `seal-${size}`, 'seal-single']} aria-hidden="true">
+      {single}
+    </span>
+  ) : (
+    <span class:list={['seal', `seal-${size}`]} aria-hidden="true">
+      <span class="seal-inner">
+        {cells.map((c) => (
+          <span>{c}</span>
+        ))}
+      </span>
+    </span>
+  )
+}
+
+<style>
+  .seal {
+    display: inline-block;
+    flex: none;
+    border-radius: 8px;
+    background: var(--seal);
+    color: var(--seal-ink);
+    font-family: var(--font-serif);
+    font-weight: 900;
+    line-height: 1;
+    user-select: none;
+  }
+
+  .seal-inner {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    height: 100%;
+    border: 2px solid color-mix(in srgb, var(--seal-ink) 90%, transparent);
+    border-radius: 4px;
+  }
+
+  .seal-inner > span {
+    display: grid;
+    place-items: center;
+  }
+
+  .seal-single {
+    display: inline-grid;
+    place-items: center;
+  }
+
+  .seal-lg {
+    width: 104px;
+    height: 104px;
+    padding: 6px;
+    font-size: 34px;
+  }
+
+  .seal-lg.seal-single {
+    font-size: 52px;
+  }
+
+  .seal-sm {
+    width: 50px;
+    height: 50px;
+    padding: 3px;
+    border-radius: 5px;
+    font-size: 15px;
+  }
+
+  .seal-sm .seal-inner {
+    border-width: 1px;
+    border-radius: 3px;
+  }
+
+  .seal-sm.seal-single {
+    font-size: 24px;
+  }
+
+  .seal-xs {
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+
+  @media (max-width: 40rem) {
+    .seal-lg {
+      width: 84px;
+      height: 84px;
+      padding: 5px;
+      font-size: 27px;
+    }
+  }
+</style>

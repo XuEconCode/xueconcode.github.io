@@ -1,0 +1,197 @@
+---
+/** 论文条目：书目格式——编号、题名、合作者与出处、资源链接 */
+import LinkRow from './LinkRow.astro';
+import { getProfile, type Publication } from '../lib/content';
+import { detectLang, joinNames } from '../lib/format';
+import { useTranslations, type Lang } from '../i18n/ui';
+import { bracket, htmlLang, quoteTitle, tx } from '../i18n/utils';
+
+interface Props {
+  pub: Publication;
+  lang: Lang;
+  /** 编号（从 1 开始） */
+  n: number;
+  /** compact：首页与简历；full：研究页，显示摘要与 BibTeX */
+  variant?: 'compact' | 'full';
+  /** 在出处信息里注明类型（首页混排时用） */
+  showType?: boolean;
+}
+
+const { pub, lang, n, variant = 'compact', showType = false } = Astro.props;
+const t = useTranslations(lang);
+const { data } = pub;
+
+const title = tx(data.title, lang);
+const titleLang = detectLang(title);
+const titleHref = data.links.paper ?? data.links.pdf ?? data.links.url;
+
+// 完整作者列表：自己的名字加粗
+const profile = await getProfile();
+const myNames = new Set([tx(profile.name, 'zh'), tx(profile.name, 'en')].filter(Boolean));
+const authors = data.authors.map((author) => {
+  const name = tx(author, lang);
+  return { name, me: myNames.has(name) };
+});
+
+const meta: { text: string; venue?: boolean }[] = [
+  data.coauthors.length && !authors.length ? { text: t('pub.with', { names: joinNames(data.coauthors, lang) }) } : null,
+  showType ? { text: t(`pub.label.${data.type}`) } : null,
+  data.venue ? { text: tx(data.venue, lang), venue: true } : null,
+  data.status ? { text: tx(data.status, lang) } : null,
+  data.year ? { text: data.year } : null,
+].filter((item): item is { text: string; venue?: boolean } => Boolean(item?.text));
+const abstract = variant === 'full' ? tx(data.abstract, lang) : '';
+const abstractLang = abstract ? detectLang(abstract) : lang;
+---
+
+<article class="pub" id={variant === 'full' ? pub.id : undefined}>
+  <span class="pub-num latin" aria-hidden="true">[{n}]</span>
+  <div class="pub-body">
+    <h3 class="pub-title" lang={titleLang !== lang ? htmlLang[titleLang] : undefined}>
+      {titleHref ? <a href={titleHref}>{quoteTitle(title, lang)}</a> : quoteTitle(title, lang)}
+    </h3>
+    {
+      authors.length > 0 && (
+        <p class="pub-authors">
+          {authors.map((author, i) => (
+            <>
+              {i > 0 && (lang === 'zh' ? '、' : ', ')}
+              {author.me ? <strong>{author.name}</strong> : author.name}
+            </>
+          ))}
+        </p>
+      )
+    }
+    {
+      meta.length > 0 && (
+        <ul class="pub-meta dot-list">
+          {meta.map((item) => (
+            <li class:list={{ venue: item.venue }}>{item.text}</li>
+          ))}
+        </ul>
+      )
+    }
+    {abstract && <p class="pub-abstract" lang={abstractLang !== lang ? htmlLang[abstractLang] : undefined}>{abstract}</p>}
+    <div class="pub-links"><LinkRow links={data.links} lang={lang} /></div>
+    {
+      variant === 'full' && data.bibtex && (
+        <details class="pub-bibtex">
+          <summary>{bracket(t('pub.bibtex'), lang)}</summary>
+          <pre><code>{data.bibtex.trim()}</code></pre>
+        </details>
+      )
+    }
+  </div>
+</article>
+
+<style>
+  .pub {
+    display: grid;
+    grid-template-columns: 3.25rem minmax(0, 1fr);
+    padding: 1.4rem 0;
+    border-bottom: 1px dashed var(--line);
+  }
+
+  .pub-num {
+    color: var(--seal);
+    font-size: 1.375rem;
+    line-height: 1.6;
+  }
+
+  .pub-title {
+    font-size: 1.1875rem;
+    font-weight: 600;
+    line-height: 1.75;
+    letter-spacing: 0.02em;
+    text-wrap: pretty;
+  }
+
+  .pub-title a {
+    color: var(--ink);
+  }
+
+  .pub-title a:hover {
+    color: var(--seal);
+  }
+
+  .pub-authors {
+    margin-top: 0.3rem;
+    color: var(--text);
+    font-size: 0.96875rem;
+    line-height: 1.8;
+  }
+
+  .pub-authors strong {
+    color: var(--ink);
+    font-weight: 700;
+  }
+
+  .pub-meta {
+    margin-top: 0.2rem;
+    color: var(--muted);
+    font-size: 0.96875rem;
+    line-height: 1.8;
+  }
+
+  :global(:root:lang(en)) .pub-meta .venue {
+    font-style: italic;
+  }
+
+  .pub-abstract {
+    margin-top: 0.75rem;
+    font-size: 1rem;
+    line-height: 1.9;
+    text-align: justify;
+  }
+
+  .pub-links {
+    margin-top: 0.5rem;
+  }
+
+  .pub-links:empty {
+    display: none;
+  }
+
+  .pub-bibtex {
+    margin-top: 0.4rem;
+    font-size: var(--text-sm);
+  }
+
+  .pub-bibtex summary {
+    width: fit-content;
+    color: var(--seal);
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .pub-bibtex summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .pub-bibtex summary:hover {
+    color: var(--ink);
+  }
+
+  .pub-bibtex pre {
+    margin-top: 0.6rem;
+    padding: 0.9rem 1.1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--paper-light);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: 1.65;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  @media print {
+    .pub {
+      grid-template-columns: 2.25rem minmax(0, 1fr);
+      padding: 0.35rem 0;
+      border-bottom: 0;
+      break-inside: avoid;
+    }
+  }
+</style>

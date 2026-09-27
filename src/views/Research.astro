@@ -1,0 +1,87 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Section from '../components/Section.astro';
+import PubItem from '../components/PubItem.astro';
+import Timeline from '../components/Timeline.astro';
+import { getProfile, getPublications, pubTypeOrder } from '../lib/content';
+import { useTranslations, type Lang } from '../i18n/ui';
+import { htmlLang, localizePath, otherLang, quoteTitle, tx } from '../i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const alt = otherLang(lang);
+const t = useTranslations(lang);
+const tAlt = useTranslations(alt);
+const profile = await getProfile();
+const pubs = await getPublications();
+const groups = pubTypeOrder
+  .map((type) => ({ type, items: pubs.filter((pub) => pub.data.type === type) }))
+  .filter((group) => group.items.length > 0);
+const interests = profile.interests.map((item) => tx(item, lang));
+const grants = profile.grants.map((item) => ({
+  when: tx(item.role, lang),
+  title: quoteTitle(tx(item.title, lang), lang),
+  subtitle: tx(item.funder, lang),
+}));
+---
+
+<BaseLayout
+  lang={lang}
+  title={t('research.title')}
+  description={t('research.description')}
+  alternateHref={localizePath('/research/', alt)}
+>
+  <header class="page-head">
+    <h1>{t('research.title')}</h1>
+    <p class="subtitle" lang={htmlLang[alt]}>{tAlt('research.title')}</p>
+    <div class="ornament" aria-hidden="true"><span></span></div>
+    {
+      interests.length > 0 && (
+        <p class="lede">
+          {t('hero.interests')}
+          {lang === 'zh' ? '：' : ': '}
+          {interests.map((item, i) => (
+            <>
+              <span class="nowrap">{item}</span>
+              {i < interests.length - 1 && ' · '}
+            </>
+          ))}
+        </p>
+      )
+    }
+  </header>
+
+  <div>
+    {
+      groups.map((group, gi) => (
+        <Section
+          id={group.type}
+          lang={lang}
+          title={t(`pub.type.${group.type}`)}
+          subtitle={tAlt(`pub.type.${group.type}`)}
+          index={gi}
+        >
+          {group.items.map((pub, i) => (
+            <PubItem pub={pub} lang={lang} n={i + 1} variant="full" />
+          ))}
+        </Section>
+      ))
+    }
+    {
+      grants.length > 0 && (
+        <Section
+          id="grants"
+          lang={lang}
+          title={t('section.grants')}
+          subtitle={tAlt('section.grants')}
+          index={groups.length}
+        >
+          <Timeline items={grants} layout="aside" />
+        </Section>
+      )
+    }
+  </div>
+</BaseLayout>

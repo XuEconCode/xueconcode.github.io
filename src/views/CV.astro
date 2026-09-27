@@ -1,0 +1,298 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import Seal from '../components/Seal.astro';
+import Section from '../components/Section.astro';
+import PubItem from '../components/PubItem.astro';
+import ProjectItem from '../components/ProjectItem.astro';
+import Timeline from '../components/Timeline.astro';
+import SkillGroups from '../components/SkillGroups.astro';
+import { getProfile, getProjects, getPublications, sealText } from '../lib/content';
+import { formatPeriod, formatYearMonth } from '../lib/format';
+import { SITE } from '../site.config';
+import { useTranslations, type Lang } from '../i18n/ui';
+import { htmlLang, localizePath, otherLang, quoteTitle, tx } from '../i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const alt = otherLang(lang);
+const tAlt = useTranslations(alt);
+const profile = await getProfile();
+const pubs = await getPublications();
+const projects = await getProjects(lang);
+
+const name = tx(profile.name, lang);
+const altName = tx(profile.name, alt);
+const role = [tx(profile.title, lang), tx(profile.affiliation, lang)].filter(Boolean).join(' · ');
+const pdf = profile.cv?.[lang] ?? profile.cv?.[alt];
+const home = new URL(localizePath('/', lang), SITE.url);
+const githubUrl = new URL(SITE.githubUrl);
+
+const education = profile.education.map((item) => ({
+  when: formatPeriod(item.start, item.end, lang),
+  title: tx(item.school, lang),
+  subtitle: tx(item.degree, lang),
+  details: item.details.map((d) => tx(d, lang)),
+}));
+const experience = profile.experience.map((item) => ({
+  when: formatPeriod(item.start, item.end, lang),
+  title: tx(item.org, lang),
+  subtitle: tx(item.role, lang),
+  details: item.details.map((d) => tx(d, lang)),
+}));
+const grants = profile.grants.map((item) => ({
+  when: tx(item.role, lang),
+  title: quoteTitle(tx(item.title, lang), lang),
+  subtitle: tx(item.funder, lang),
+}));
+const honors = profile.honors.map((item) => ({
+  when: item.when ?? formatYearMonth(item.year!, lang),
+  title: tx(item.title, lang),
+  subtitle: tx(item.org, lang) || undefined,
+}));
+
+// 板块按实际显示的顺序编号
+const shown = [
+  education.length > 0 && 'education',
+  pubs.length > 0 && 'research',
+  grants.length > 0 && 'grants',
+  projects.length > 0 && 'projects',
+  experience.length > 0 && 'experience',
+  honors.length > 0 && 'honors',
+  profile.skills.length > 0 && 'skills',
+].filter(Boolean);
+const index = (key: string) => shown.indexOf(key);
+
+const photos = import.meta.glob<ImageMetadata>('../assets/photo.{jpg,jpeg,png,webp,avif}', { eager: true, import: 'default' });
+const photo = Object.values(photos)[0];
+---
+
+<BaseLayout lang={lang} title={t('cv.title')} alternateHref={localizePath('/cv/', alt)}>
+  <article class="cv">
+    <header class="cv-head">
+      <Seal text={sealText(profile)} size="sm" />
+      <div class="cv-id">
+        <h1>
+          {name}
+          {altName && altName !== name && <span class:list={['cv-alt', alt]} lang={htmlLang[alt]}>{altName}</span>}
+        </h1>
+        {role && <p class="cv-role">{role}</p>}
+        <ul class="cv-contact dot-list">
+          {profile.email && <li><a href={`mailto:${profile.email}`}>{profile.email}</a></li>}
+          <li><a href={home}>{home.host + home.pathname.replace(/\/$/, '')}</a></li>
+          <li><a href={githubUrl}>{githubUrl.host + githubUrl.pathname}</a></li>
+        </ul>
+      </div>
+      {photo && <Image class="cv-photo" src={photo} alt={name} width={96} height={120} densities={[1, 2]} />}
+    </header>
+    <div class="double-rule" aria-hidden="true"></div>
+
+    <div class="cv-actions no-print">
+      {
+        pdf && (
+          <a class="cv-button" href={pdf} download>
+            <Icon name="download" />
+            {t('cv.download')}
+          </a>
+        )
+      }
+      <button type="button" class="cv-button" onclick="window.print()">
+        <Icon name="printer" />
+        {t('cv.print')}
+      </button>
+    </div>
+
+    {
+      education.length > 0 && (
+        <Section id="cv-education" lang={lang} title={t('section.education')} subtitle={tAlt('section.education')} index={index('education')}>
+          <Timeline items={education} layout="aside" />
+        </Section>
+      )
+    }
+
+    {
+      pubs.length > 0 && (
+        <Section id="cv-research" lang={lang} title={t('nav.research')} subtitle={tAlt('nav.research')} index={index('research')}>
+          {pubs.map((pub, i) => (
+            <PubItem pub={pub} lang={lang} n={i + 1} showType />
+          ))}
+        </Section>
+      )
+    }
+
+    {
+      grants.length > 0 && (
+        <Section id="cv-grants" lang={lang} title={t('section.grants')} subtitle={tAlt('section.grants')} index={index('grants')}>
+          <Timeline items={grants} layout="aside" />
+        </Section>
+      )
+    }
+
+    {
+      projects.length > 0 && (
+        <Section id="cv-projects" lang={lang} title={t('nav.projects')} subtitle={tAlt('nav.projects')} index={index('projects')}>
+          {projects.map((project) => (
+            <ProjectItem project={project} lang={lang} variant="compact" />
+          ))}
+        </Section>
+      )
+    }
+
+    {
+      experience.length > 0 && (
+        <Section id="cv-experience" lang={lang} title={t('section.experience')} subtitle={tAlt('section.experience')} index={index('experience')}>
+          <Timeline items={experience} layout="aside" />
+        </Section>
+      )
+    }
+
+    {
+      honors.length > 0 && (
+        <Section id="cv-honors" lang={lang} title={t('section.honors')} subtitle={tAlt('section.honors')} index={index('honors')}>
+          <Timeline items={honors} layout="aside" />
+        </Section>
+      )
+    }
+
+    {
+      profile.skills.length > 0 && (
+        <Section id="cv-skills" lang={lang} title={t('section.skills')} subtitle={tAlt('section.skills')} index={index('skills')}>
+          <SkillGroups skills={profile.skills} lang={lang} />
+        </Section>
+      )
+    }
+  </article>
+</BaseLayout>
+
+<style>
+  .cv {
+    --section-gap: 3.5rem;
+  }
+
+  .cv-head {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 4rem 0 1.5rem;
+  }
+
+  h1 {
+    font-size: var(--text-3xl);
+    letter-spacing: 0.12em;
+  }
+
+  :global(:root:lang(en)) h1 {
+    letter-spacing: 0.01em;
+  }
+
+  .cv-alt {
+    margin-left: 0.75em;
+    color: var(--muted);
+    font-size: 0.55em;
+    font-weight: 400;
+  }
+
+  .cv-alt.en {
+    font-family: var(--font-latin);
+    font-size: 0.65em;
+    font-style: italic;
+    letter-spacing: 0;
+  }
+
+  .cv-alt.zh {
+    letter-spacing: 0.16em;
+  }
+
+  .cv-id {
+    flex: 1;
+  }
+
+  .cv-head :global(.cv-photo) {
+    width: 6rem;
+    height: 7.5rem;
+    padding: 0.3rem;
+    border: 1px solid var(--line);
+    background: var(--paper-light);
+    object-fit: cover;
+  }
+
+  .cv-role {
+    margin-top: 0.25rem;
+    color: var(--ink);
+    letter-spacing: 0.06em;
+  }
+
+  .cv-contact {
+    margin-top: 0.15rem;
+    color: var(--muted);
+    font-size: var(--text-sm);
+  }
+
+  .cv-contact a {
+    color: inherit;
+  }
+
+  .cv-contact a:hover {
+    color: var(--seal);
+  }
+
+  .cv-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.75rem;
+  }
+
+  .cv-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.45rem 1rem;
+    border: 1px solid var(--seal);
+    border-radius: var(--radius);
+    background: none;
+    color: var(--seal);
+    font: inherit;
+    font-size: var(--text-sm);
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition:
+      background-color var(--ease),
+      color var(--ease);
+  }
+
+  .cv-button:hover {
+    background: var(--seal);
+    color: var(--seal-ink);
+  }
+
+  @media (max-width: 40rem) {
+    .cv-head {
+      align-items: flex-start;
+      padding-top: 2.5rem;
+    }
+  }
+
+  @media print {
+    .cv {
+      --section-gap: 1.1rem;
+    }
+
+    .cv-head {
+      padding: 0 0 0.6rem;
+    }
+
+    h1 {
+      font-size: 20pt;
+    }
+
+    .cv-contact {
+      color: var(--text);
+    }
+  }
+</style>

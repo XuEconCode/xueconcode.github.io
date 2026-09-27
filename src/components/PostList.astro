@@ -1,0 +1,110 @@
+---
+import type { PostListItem } from '../lib/content';
+import { formatDate, isoDate } from '../lib/format';
+import { useTranslations, type Lang } from '../i18n/ui';
+import { htmlLang, localizePath } from '../i18n/utils';
+
+interface Props {
+  posts: PostListItem[];
+  lang: Lang;
+  /** 显示摘要 */
+  showDescription?: boolean;
+}
+
+const { posts, lang, showDescription = true } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<ul class="post-list">
+  {
+    posts.map((post) => (
+      <li class="post">
+        <div class="post-head">
+          <a
+            class="post-title"
+            href={localizePath(`/writing/${post.slug}/`, post.lang)}
+            lang={post.isFallback ? htmlLang[post.lang] : undefined}
+          >
+            {post.entry.data.title}
+          </a>
+          {post.isFallback && <span class="post-badge">{t('writing.otherLang')}</span>}
+          <time class="post-date latin tabular" datetime={isoDate(post.entry.data.date)}>
+            {formatDate(post.entry.data.date, lang, 'short')}
+          </time>
+        </div>
+        {showDescription && (
+          <p class="post-description" lang={post.isFallback ? htmlLang[post.lang] : undefined}>
+            {post.entry.data.description}
+          </p>
+        )}
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .post-list {
+    padding: 0;
+    list-style: none;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .post {
+    padding: 1.4rem 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .post-head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem 1rem;
+  }
+
+  .post-title {
+    color: var(--ink);
+    font-size: 1.1875rem;
+    font-weight: 600;
+    line-height: 1.6;
+    letter-spacing: 0.03em;
+  }
+
+  .post-title:hover {
+    color: var(--seal);
+  }
+
+  .post-badge {
+    flex: none;
+    padding: 0 0.45em;
+    border: 1px solid var(--seal);
+    border-radius: 3px;
+    color: var(--seal);
+    font-size: var(--text-xs);
+    line-height: 1.6;
+    letter-spacing: 0.08em;
+  }
+
+  .post-date {
+    flex: none;
+    margin-left: auto;
+    color: var(--muted);
+    font-size: 1.125rem;
+  }
+
+  .post-description {
+    margin-top: 0.45rem;
+    color: var(--muted);
+    font-size: 0.96875rem;
+    line-height: 1.8;
+  }
+
+  @media (max-width: 40rem) {
+    .post-head {
+      flex-wrap: wrap;
+    }
+
+    .post-date {
+      width: 100%;
+      margin-left: 0;
+    }
+  }
+</style>

@@ -1,0 +1,194 @@
+---
+/** 项目条目：plate（首页与项目列表）= 带衬底的插图 + 标题 + 摘要 + 主要发现；compact（简历）= 标题 + 摘要 */
+import { Image } from 'astro:assets';
+import KeyResult from './KeyResult.astro';
+import LinkRow from './LinkRow.astro';
+import { parseId, type Project } from '../lib/content';
+import { repoUrl } from '../site.config';
+import { useTranslations, type Lang } from '../i18n/ui';
+import { localizePath } from '../i18n/utils';
+
+interface Props {
+  project: Project;
+  lang: Lang;
+  variant?: 'plate' | 'compact';
+}
+
+const { project, lang, variant = 'plate' } = Astro.props;
+const t = useTranslations(lang);
+const { data } = project;
+const href = localizePath(`/projects/${parseId(project.id).slug}/`, lang);
+const links = { ...data.links, ...(data.repo && !data.links.code ? { code: repoUrl(data.repo) } : {}) };
+---
+
+<article class:list={['project', variant]}>
+  {
+    variant === 'plate' && data.cover && (
+      <figure class="cover">
+        <Image
+          src={data.cover}
+          alt={data.coverAlt ?? ''}
+          widths={[728, 1456]}
+          sizes="(min-width: 50rem) 728px, 100vw"
+          style={`object-position: ${data.coverPosition}`}
+        />
+        {data.coverCaption && <figcaption>{data.coverCaption}</figcaption>}
+      </figure>
+    )
+  }
+  <div class="project-head">
+    <h3><a href={href}>{data.title}</a></h3>
+    <span class="year italic">{data.date.getUTCFullYear()}</span>
+  </div>
+  <p class="project-summary">{data.summary}</p>
+  {
+    variant === 'plate' && data.keyResult && (
+      <KeyResult text={data.keyResult} stats={data.keyStats} lang={lang} label={t('project.keyResult')} compact />
+    )
+  }
+  {
+    variant === 'plate' && (
+      <div class="project-foot">
+        {data.tags.length > 0 && (
+          <ul class="dot-list tags">
+            {data.tags.map((tag) => (
+              <li>{tag}</li>
+            ))}
+          </ul>
+        )}
+        <LinkRow links={links} lang={lang} />
+      </div>
+    )
+  }
+</article>
+
+<style>
+  .cover {
+    margin: 0 0 2.1rem;
+    padding: 1rem 1rem 0.875rem;
+    border: 1px solid var(--line);
+    background: var(--paper-light);
+  }
+
+  .cover :global(img) {
+    width: 100%;
+    height: 23.75rem;
+    object-fit: cover;
+    filter: sepia(0.22) saturate(0.9);
+  }
+
+  :global([data-theme='dark']) .cover :global(img) {
+    filter: sepia(0.3) brightness(0.8);
+  }
+
+  figcaption {
+    margin-top: 0.75rem;
+    color: var(--muted);
+    font-size: var(--text-sm);
+    letter-spacing: 0.1em;
+    text-align: center;
+  }
+
+  .project-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  h3 {
+    font-size: var(--text-xl);
+    letter-spacing: 0.08em;
+  }
+
+  :global(:root:lang(en)) h3 {
+    letter-spacing: 0;
+  }
+
+  h3 a {
+    color: var(--ink);
+  }
+
+  h3 a:hover {
+    color: var(--seal);
+  }
+
+  .year {
+    flex: none;
+    color: var(--muted);
+    font-size: 1.3125rem;
+  }
+
+  .project-summary {
+    margin-top: 0.9rem;
+  }
+
+  .project.plate .project-summary {
+    text-align: justify;
+  }
+
+  :global(:root:lang(zh)) .project.plate .project-summary {
+    text-indent: 2em;
+  }
+
+  .project-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.5rem 1.5rem;
+    margin-top: 1.4rem;
+  }
+
+  .tags {
+    color: var(--muted);
+    font-size: var(--text-sm);
+    letter-spacing: 0.1em;
+  }
+
+  /* 多个项目之间用菱形花饰分隔 */
+  .project.plate + .project.plate::before {
+    content: '◇';
+    display: block;
+    margin-bottom: 3.5rem;
+    color: var(--seal);
+    text-align: center;
+  }
+
+  .project.plate + .project.plate {
+    margin-top: 3.5rem;
+  }
+
+  /* 简历中的紧凑样式 */
+  .compact + .compact {
+    margin-top: 1rem;
+  }
+
+  .compact h3 {
+    font-size: 1.125rem;
+    letter-spacing: 0.04em;
+  }
+
+  .compact .year {
+    font-size: 1.125rem;
+  }
+
+  .compact .project-summary {
+    margin-top: 0.25rem;
+    color: var(--muted);
+    font-size: 0.96875rem;
+    line-height: 1.8;
+  }
+
+  @media (max-width: 40rem) {
+    .cover :global(img) {
+      height: 15rem;
+    }
+  }
+
+  @media print {
+    .project {
+      break-inside: avoid;
+    }
+  }
+</style>

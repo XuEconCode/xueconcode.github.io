@@ -1,0 +1,72 @@
+---
+import Seal from './Seal.astro';
+import { getProfile, sealText } from '../lib/content';
+import { formatDate } from '../lib/format';
+import { SITE } from '../site.config';
+import { useTranslations, type Lang } from '../i18n/ui';
+import { localizePath, tx } from '../i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const profile = await getProfile();
+const now = new Date();
+---
+
+<footer class="site-footer">
+  <div class="shell">
+    <div class="double-rule" aria-hidden="true"></div>
+    <div class="footer-inner">
+      <Seal text={sealText(profile)} size="sm" />
+      <ul class="dot-list">
+        <li>© {now.getUTCFullYear()} {tx(profile.name, lang)}</li>
+        <li><a href={localizePath('/rss.xml', lang)}>{t('footer.rss')}</a></li>
+        <li><a href={SITE.repoUrl}>{t('footer.source')}</a></li>
+        <li>{t('footer.updated', { date: formatDate(now, lang, 'short') })}</li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: 7rem;
+  }
+
+  .footer-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 2.5rem 0 5rem;
+  }
+
+  .dot-list {
+    justify-content: center;
+    color: var(--muted);
+    font-size: var(--text-xs);
+    letter-spacing: 0.12em;
+  }
+
+  :global(:root:lang(en)) .dot-list {
+    font-size: var(--text-sm);
+    letter-spacing: 0.02em;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  a:hover {
+    color: var(--seal);
+  }
+
+  @media (max-width: 56rem) {
+    .footer-inner {
+      padding-bottom: 2.5rem;
+    }
+  }
+</style>

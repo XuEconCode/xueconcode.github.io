@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostList from '../components/PostList.astro';
+import { getPostList } from '../lib/content';
+import { useTranslations, type Lang } from '../i18n/ui';
+import { htmlLang, localizePath, otherLang } from '../i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const alt = otherLang(lang);
+const t = useTranslations(lang);
+const tAlt = useTranslations(alt);
+const posts = await getPostList(lang);
+---
+
+<BaseLayout
+  lang={lang}
+  title={t('writing.title')}
+  description={t('writing.description')}
+  alternateHref={localizePath('/writing/', alt)}
+>
+  <header class="page-head">
+    <h1>{t('writing.title')}</h1>
+    <p class="subtitle" lang={htmlLang[alt]}>{tAlt('writing.title')}</p>
+    <div class="ornament" aria-hidden="true"><span></span></div>
+    <p class="lede">{t('writing.description')}</p>
+  </header>
+
+  {posts.length > 0 ? <PostList posts={posts} lang={lang} /> : <p class="meta">{t('writing.empty')}</p>}
+</BaseLayout>

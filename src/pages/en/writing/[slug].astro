@@ -1,0 +1,15 @@
+---
+import type { InferGetStaticPropsType } from 'astro';
+import Article from '../../../views/Article.astro';
+import { getPosts, parseId } from '../../../lib/content';
+
+export async function getStaticPaths() {
+  const entries = await getPosts('en');
+  return entries.map((entry) => ({ params: { slug: parseId(entry.id).slug }, props: { entry } }));
+}
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+const { entry } = Astro.props;
+---
+
+<Article entry={entry} lang="en" />

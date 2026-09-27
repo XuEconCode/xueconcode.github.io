@@ -1,0 +1,267 @@
+/* ============================================================
+   正文排版（项目详情、文章等 Markdown 内容）：书籍版式
+   ============================================================ */
+
+.prose > * + * {
+  margin-top: 1.1em;
+}
+
+/* 中文段落：首行缩进两字、两端对齐 */
+.prose:lang(zh) > p {
+  text-align: justify;
+  text-indent: 2em;
+}
+
+.prose h2 {
+  margin-top: 2.6em;
+  font-size: var(--text-xl);
+  letter-spacing: 0.08em;
+  scroll-margin-top: 2rem;
+}
+
+.prose h2::before {
+  content: "";
+  display: inline-block;
+  width: 0.45em;
+  height: 0.45em;
+  margin-right: 0.6em;
+  vertical-align: 0.18em;
+  background: var(--seal);
+  transform: rotate(45deg);
+}
+
+.prose h3 {
+  margin-top: 2em;
+  font-size: var(--text-lg);
+  letter-spacing: 0.04em;
+  scroll-margin-top: 2rem;
+}
+
+.prose h4 {
+  margin-top: 1.75em;
+  font-size: var(--text-base);
+}
+
+.prose :is(h2, h3, h4) + * {
+  margin-top: 0.8em;
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 2em;
+}
+
+.prose li + li,
+.prose li > :is(ul, ol) {
+  margin-top: 0.35em;
+}
+
+.prose li::marker {
+  color: var(--seal);
+}
+
+.prose strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.prose a {
+  color: var(--seal);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+  text-decoration-color: color-mix(in srgb, var(--seal) 40%, transparent);
+}
+
+.prose a:hover {
+  text-decoration-color: currentColor;
+}
+
+/* 引文：楷体，左右缩进 */
+.prose blockquote {
+  margin-inline: 2em;
+  color: var(--text);
+  font-family: var(--font-kai);
+  font-size: 1.05em;
+}
+
+.prose blockquote > * + * {
+  margin-top: 0.75em;
+}
+
+.prose hr {
+  display: flex;
+  height: auto;
+  margin-block: 2.75em;
+  border: 0;
+}
+
+.prose hr::before {
+  content: "◇";
+  margin-inline: auto;
+  color: var(--seal);
+  font-size: 0.875em;
+}
+
+/* ---------- 代码 ---------- */
+
+.prose code {
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+  background: var(--paper-light);
+  font-family: var(--font-mono);
+  font-size: 0.82em;
+}
+
+.prose pre {
+  padding: 1.1em 1.3em;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper-light) !important;
+  font-size: var(--text-sm);
+  line-height: 1.65;
+  overflow-x: auto;
+  tab-size: 2;
+  text-indent: 0;
+}
+
+.prose pre code {
+  padding: 0;
+  background: none;
+  font-size: inherit;
+}
+
+/* Shiki 双主题：随日间 / 夜读切换 */
+.astro-code,
+.astro-code span {
+  color: var(--shiki-light);
+}
+
+:root[data-theme="dark"] .astro-code,
+:root[data-theme="dark"] .astro-code span {
+  color: var(--shiki-dark);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .astro-code,
+  :root:not([data-theme="light"]) .astro-code span {
+    color: var(--shiki-dark);
+  }
+}
+
+/* ---------- 表格：学术三线表 ---------- */
+
+.prose .table-wrap {
+  overflow-x: auto;
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  border-top: 1.5px solid var(--ink);
+  border-bottom: 1.5px solid var(--ink);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.6;
+}
+
+.prose th,
+.prose td {
+  padding: 0.5em 0.75em;
+  vertical-align: top;
+}
+
+.prose th:first-child,
+.prose td:first-child {
+  padding-left: 0;
+}
+
+.prose th:last-child,
+.prose td:last-child {
+  padding-right: 0;
+}
+
+.prose thead th {
+  border-bottom: 1px solid var(--ink);
+  color: var(--ink);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* 未指定对齐的表头左对齐；Markdown 中 ---: 指定的右对齐（数字列）保持不变 */
+.prose th:not([align]) {
+  text-align: left;
+}
+
+/* 数字列不折行，窄屏时表格整体可横向滚动 */
+.prose [align="right"] {
+  white-space: nowrap;
+}
+
+@media (max-width: 40rem) {
+  .prose th,
+  .prose td {
+    padding: 0.4em 0.5em;
+  }
+}
+
+/* ---------- 插图：衬底 + 图注 ---------- */
+
+.prose figure {
+  margin-block: 2.25em;
+  padding: 1rem 1rem 0.875rem;
+  border: 1px solid var(--line);
+  background: var(--paper-light);
+}
+
+/* 保留 width/height 属性以便加载前按比例占位；竖长图限制高度并在框内等比显示 */
+.prose figure img,
+.prose > p > img {
+  max-height: 34rem;
+  margin-inline: auto;
+  object-fit: contain;
+}
+
+.prose figcaption {
+  margin-top: 0.75rem;
+  color: var(--muted);
+  font-size: var(--text-sm);
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-indent: 0;
+}
+
+:root[data-theme="dark"] .prose img {
+  filter: brightness(0.85) sepia(0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .prose img {
+    filter: brightness(0.85) sepia(0.1);
+  }
+}
+
+/* ---------- 公式与脚注 ---------- */
+
+.prose .katex {
+  font-size: 1.05em;
+}
+
+.prose .katex-display {
+  padding-block: 0.25em;
+  overflow-x: auto;
+  overflow-y: hidden;
+  text-indent: 0;
+}
+
+.prose .footnotes {
+  margin-top: 3em;
+  padding-top: 1em;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
+.prose sup a {
+  text-decoration: none;
+}

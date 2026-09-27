@@ -1,0 +1,35 @@
+{
+  "name": "personal-homepage",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "og": "node scripts/og.mjs",
+    "astro": "astro"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "dependencies": {
+    "@astrojs/markdown-remark": "^7.3.1",
+    "@astrojs/mdx": "^8.0.2",
+    "@astrojs/rss": "^4.0.19",
+    "@astrojs/sitemap": "^3.7.4",
+    "@fontsource-variable/eb-garamond": "^5.3.0",
+    "@fontsource-variable/noto-serif-sc": "^5.3.0",
+    "astro": "^7.3.5",
+    "katex": "^0.18.9",
+    "rehype-katex": "^7.0.1",
+    "remark-math": "^6.0.0",
+    "yaml": "^2.9.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "subset-font": "^2.9.0",
+    "typescript": "^6.0.3"
+  }
+}

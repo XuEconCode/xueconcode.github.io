@@ -1,0 +1,63 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { ui } from '../i18n/ui';
+---
+
+<BaseLayout lang="zh" title={`404 · ${ui.zh['notFound.title']}`} alternateHref={null} fallbackHref="/en/">
+  <section class="not-found">
+    <p class="code latin">404</p>
+    <h1>{ui.zh['notFound.title']}</h1>
+    <p class="en-title" lang="en">{ui.en['notFound.title']}</p>
+    <div class="ornament" aria-hidden="true"><span></span></div>
+    <p class="body">
+      {ui.zh['notFound.body']}<br />
+      <span lang="en" class="latin">{ui.en['notFound.body']}</span>
+    </p>
+    <ul class="links dot-list">
+      <li><a href="/">{ui.zh['notFound.home']}</a></li>
+      <li><a href="/en/" lang="en" class="latin">{ui.en['notFound.home']}</a></li>
+    </ul>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    padding-block: 6rem 2rem;
+    text-align: center;
+  }
+
+  .code {
+    color: var(--seal);
+    font-size: 3rem;
+    font-style: italic;
+    line-height: 1;
+  }
+
+  h1 {
+    margin-top: 1.5rem;
+    padding-left: 0.16em;
+    font-size: var(--text-3xl);
+    letter-spacing: 0.16em;
+  }
+
+  .en-title {
+    color: var(--muted);
+    font-family: var(--font-latin);
+    font-size: 1.375rem;
+    font-style: italic;
+  }
+
+  .ornament {
+    margin: 2rem 0;
+  }
+
+  .body {
+    color: var(--muted);
+  }
+
+  .links {
+    justify-content: center;
+    margin-top: 2rem;
+    letter-spacing: 0.1em;
+  }
+</style>

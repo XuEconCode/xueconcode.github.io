@@ -1,0 +1,85 @@
+---
+import 'katex/dist/katex.min.css';
+import '../styles/prose.css';
+import { render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import KeyResult from '../components/KeyResult.astro';
+import LinkRow from '../components/LinkRow.astro';
+import { hasVersion, parseId, type Project } from '../lib/content';
+import { repoUrl } from '../site.config';
+import { useTranslations, type Lang } from '../i18n/ui';
+import { localizePath, otherLang } from '../i18n/utils';
+
+interface Props {
+  entry: Project;
+  lang: Lang;
+}
+
+const { entry, lang } = Astro.props;
+const t = useTranslations(lang);
+const { data } = entry;
+const { slug } = parseId(entry.id);
+const { Content } = await render(entry);
+const alt = otherLang(lang);
+const hasAlt = await hasVersion('projects', slug, alt);
+const links = { ...data.links, ...(data.repo && !data.links.code ? { code: repoUrl(data.repo) } : {}) };
+const listHref = localizePath('/projects/', lang);
+---
+
+<BaseLayout
+  lang={lang}
+  title={data.title}
+  description={data.summary}
+  ogType="article"
+  alternateHref={hasAlt ? localizePath(`/projects/${slug}/`, alt) : null}
+  fallbackHref={localizePath('/projects/', alt)}
+>
+  <article>
+    <header class="page-head detail-head">
+      <p class="eyebrow"><a href={listHref}>{t('projects.title')}</a></p>
+      <h1>{data.title}</h1>
+      <div class="ornament" aria-hidden="true"><span></span></div>
+      <p class="lede">{data.summary}</p>
+      <ul class="meta dot-list">
+        <li class="latin">{data.date.getUTCFullYear()}</li>
+        {data.role && <li>{data.role}</li>}
+        {data.tags.map((tag) => <li>{tag}</li>)}
+      </ul>
+      <div class="head-links"><LinkRow links={links} lang={lang} /></div>
+    </header>
+
+    {
+      data.keyResult && (
+        <KeyResult text={data.keyResult} stats={data.keyStats} lang={lang} label={t('project.keyResult')} />
+      )
+    }
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    <footer class="page-foot">
+      <a href={listHref}>← {t('projects.back')}</a>
+    </footer>
+  </article>
+</BaseLayout>
+
+<style>
+  .detail-head h1 {
+    letter-spacing: 0.08em;
+  }
+
+  :global(:root:lang(en)) .detail-head h1 {
+    letter-spacing: 0;
+  }
+
+  .head-links {
+    display: flex;
+    justify-content: center;
+    margin-top: 0.75rem;
+  }
+
+  .head-links:empty {
+    display: none;
+  }
+</style>

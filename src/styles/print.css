@@ -1,0 +1,92 @@
+/* ============================================================
+   打印样式：浏览器「打印 → 另存为 PDF」即得干净的 A4 版面
+   ============================================================ */
+
+@media print {
+  @page {
+    size: A4;
+    margin: 15mm 16mm;
+  }
+
+  :root,
+  :root[data-theme],
+  :root:not([data-theme="light"]) {
+    --paper: #fff;
+    --paper-light: #fff;
+    --ink: #000;
+    --text: #1a1a1a;
+    --muted: #4a4a4a;
+    --rule: #999;
+    --line: #bbb;
+    --frame: #ddd;
+    --seal: #a93a2b;
+    --seal-ink: #fff;
+    --text-xs: 8pt;
+    --text-sm: 9pt;
+    --text-base: 10.5pt;
+    --text-lg: 12pt;
+    --text-xl: 14pt;
+    --text-2xl: 15pt;
+    --text-3xl: 18pt;
+    --text-display: 26pt;
+    --leading: 1.6;
+    --section-gap: 7mm;
+    color-scheme: light;
+  }
+
+  /* 组件尺寸多以 rem 为单位：打印时整体缩小，版面更紧凑 */
+  html {
+    font-size: 12px;
+  }
+
+  /* 屏幕上把页脚压到底部的最小高度，打印时会多出一张空白页 */
+  .book {
+    display: block;
+    min-height: 0;
+  }
+
+  .book::before,
+  .book::after,
+  .site-header,
+  .site-footer,
+  .skip-link,
+  .theme-toggle,
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+  }
+
+  .shell {
+    max-width: none;
+    padding: 0;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  /* 印章保留朱砂色 */
+  .seal {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+
+  figure,
+  tr,
+  li {
+    break-inside: avoid;
+  }
+
+  .prose img {
+    filter: none !important;
+  }
+}
