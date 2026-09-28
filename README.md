@@ -17,7 +17,8 @@
 | 项目 | `src/content/projects/zh/*.md` 与 `en/*.md` |
 | 文章 | `src/content/writing/zh/*.md` 与 `en/*.md` |
 | 校徽 | `src/assets/emblem.png`（透明底的单色图），显示在首页、简历页和分享卡片上；删掉这张图就换回朱砂名章。颜色由 `src/styles/tokens.css` 的 `--emblem` 决定（日间、夜读各一处） |
-| 名章文字 | 没有校徽图时，首页与简历页显示朱砂名章，默认取中文名（三字名补「印」，两字名补「之印」）；想自定义就在 `profile.yaml` 加一行 `seal: 四个字`。网站图标取名章的第一个字 |
+| 网站图标 | `public/favicon.ico`（16、32、48 像素）与 `public/apple-touch-icon.png`（180 像素，手机主屏幕用），由实心版校徽生成，直接替换这两个文件即可 |
+| 名章文字 | 没有校徽图时，首页与简历页显示朱砂名章，默认取中文名（三字名补「印」，两字名补「之印」）；想自定义就在 `profile.yaml` 加一行 `seal: 四个字` |
 | 简历 PDF | 放到 `public/cv/`，并在 `profile.yaml` 的 `cv` 中填写路径 |
 | 论文 PDF | 放到 `public/papers/`，在 `publications.yaml` 的 `links.pdf` 中填写 `/papers/文件名.pdf` |
 | 朱砂色（强调色） | `src/styles/tokens.css` 中的 `--seal`（日间、夜读各一处） |
@@ -95,7 +96,7 @@ git push
 
 ```
 ├─ .github/workflows/deploy.yml   自动发布
-├─ public/                        原样发布的文件：分享卡片、PDF 等
+├─ public/                        原样发布的文件：分享卡片、网站图标、PDF 等
 ├─ scripts/og.mjs                 分享卡片生成脚本
 └─ src/
    ├─ site.config.ts              GitHub 用户名与网址
