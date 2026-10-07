@@ -31,21 +31,19 @@ interests:
 
 bio:
   zh: |
-    我是许雯宏，江西财经大学数字经济学院产业经济学硕士，本科毕业于华东交通大学网络安全专业（专业排名 1/50）。
-    我的研究关注数字经济与劳动力市场：平台经济新业态如何影响居民就业，以及人工智能冲击下劳动者的职业转换与收入不平等。
+    我是许雯宏，江西财经大学数字经济学院产业经济学硕士，本科毕业于华东交通大学软件工程专业。
+    我的研究关注数字经济与劳动力市场以及人工智能冲击下劳动力市场的变化。
 
-    计算机与经济学的交叉背景，让我习惯把编程与计量方法结合起来处理大规模数据：曾借助 Qwen 大模型 API
-    清洗、分析 1.2 亿条招聘数据，也在探索用 Claude Code 等 AI 工具搭建可复现的研究数据流程。欢迎就研究合作与我联系。
+    计算机与经济学的交叉背景，让我习惯把编程与计量方法结合起来处理大规模数据：我曾处理过国内POI数据、借助大模型 API
+    清洗和分析招聘数据，也在探索用 Claude Code 等 AI 工具搭建可复现的研究数据流程。欢迎就研究合作与我联系。
   en: |
     I am Wenhong Xu. I studied Industrial Economics (M.A.) at the School of Digital Economics, Jiangxi University of
-    Finance and Economics, after a bachelor's degree in Cyber Security at East China Jiaotong University, where I
-    ranked first in my major. My research focuses on the digital economy and labor markets — how new forms of the
-    platform economy shape employment, and how exposure to artificial intelligence affects workers' job transitions
-    and inequality.
+    Finance and Economics, after a bachelor's degree in Software Engineering at East China Jiaotong University. 
+    My research focuses on the digital economy and the labor market, as well as changes in the labor market driven by the impact of artificial intelligence.
 
     With a background in both computing and economics, I enjoy combining programming with econometrics on large
-    datasets: I have used the Qwen LLM API to clean and analyze 120 million job postings, and I build reproducible
-    research pipelines with AI tools such as Claude Code. I am always happy to talk about research collaborations.
+    datasets: I have worked with domestic POI data, used large-model APIs to clean and analyze recruitment data,
+    and I build reproducible research pipelines with AI tools such as Claude Code. I am always happy to talk about research collaborations.
 
 email: xuwenhong111@gmail.com
 
@@ -64,49 +62,47 @@ education:
     end: 2026-06
     school: { zh: 江西财经大学, en: Jiangxi University of Finance and Economics }
     degree: { zh: 产业经济学 硕士 · 数字经济学院, en: "M.A. in Industrial Economics, School of Digital Economics" }
-    details:
-      - { zh: 推荐免试入学；GPA 4.13 / 5.0, en: Admitted via exam-exempt recommendation; GPA 4.13 / 5.0 }
-      - zh: 主修课程：规制经济理论与政策（97）、中级宏观经济学（91）、产业经济与数字经济前沿专题（95）
-        en: "Coursework: Regulatory Economics and Policy (97), Intermediate Macroeconomics (91), Frontiers in Industrial and Digital Economics (95)"
+    # details:
+    #   - { zh: 推荐免试入学；GPA 4.13 / 5.0, en: Admitted via exam-exempt recommendation; GPA 4.13 / 5.0 }
+    #   - zh: 主修课程：规制经济理论与政策（97）、中级宏观经济学（91）、产业经济与数字经济前沿专题（95）
+    #     en: "Coursework: Regulatory Economics and Policy (97), Intermediate Macroeconomics (91), Frontiers in Industrial and Digital Economics (95)"
   - start: 2019-09
     end: 2023-06
     school: { zh: 华东交通大学, en: East China Jiaotong University }
-    degree: { zh: 网络安全 本科 · 软件学院, en: "B.Eng. in Cyber Security, School of Software" }
-    details:
-      - { zh: GPA 3.99 / 5.0，专业排名 1 / 50, en: "GPA 3.99 / 5.0, ranked 1st of 50 in the major" }
-      - zh: 主修课程：编译原理（96）、大数据技术基础（97）、Linux 操作系统（95）、算法设计与分析（97）
-        en: "Coursework: Compiler Principles (96), Big Data Technologies (97), Linux Operating Systems (95), Algorithm Design and Analysis (97)"
+    degree: { zh: 软件工程 本科 · 软件学院, en: "B.Eng. in Software Engineering, School of Software" }
+    # details:
+    #   - { zh: GPA 3.99 / 5.0，专业排名 1 / 50, en: "GPA 3.99 / 5.0, ranked 1st of 50 in the major" }
+    #   - zh: 主修课程：编译原理（96）、大数据技术基础（97）、Linux 操作系统（95）、算法设计与分析（97）
+    #     en: "Coursework: Compiler Principles (96), Big Data Technologies (97), Linux Operating Systems (95), Algorithm Design and Analysis (97)"
 
 experience:
   - start: 2023-09
-    end: 2026-06
-    org: { zh: 大模型辅助的招聘数据研究, en: LLM-assisted job-posting research }
-    role: { zh: 硕士期间 · 数据处理与分析, en: "M.A. years · Data processing and analysis" }
+    end: 2025-06
+    org: { zh: 硕士期间 · 数据处理与分析, en: "M.A. years · Data processing and analysis" }
+    role: { zh: 大模型辅助的招聘数据研究, en: LLM-assisted job-posting research }
     details:
-      - zh: 自学 Qwen 大模型 API 开发，利用大模型对 1.2 亿条招聘数据进行清洗与分析
+      - zh: 清洗POI数据，形成分析数据集
+        en: Cleaned POI data to form an analysis dataset
+      - zh: 利用 Qwen 大模型 API 对 1.2 亿条招聘数据进行清洗与分析
         en: Built a Qwen LLM API workflow to clean and analyze 120 million job postings
-  - start: 2022-05
-    end: 2022-07
-    org: { zh: 武汉学链科技有限公司, en: "Wuhan Xuelian Technology Co., Ltd." }
-    role: { zh: 个性化电影推荐小程序开发, en: "Developer, movie recommendation mini-program" }
-    details:
-      - zh: 基于协同过滤算法开发前后端分离的推荐小程序，负责界面编程与基于用户的协同过滤算法设计
-        en: Built a front-end/back-end separated recommender on collaborative filtering; owned the UI and the user-based algorithm
-  - start: 2020-09
-    org: { zh: 本科导师课题组, en: Undergraduate research group }
-    role: { zh: 本科期间 · 区块链应用研究, en: "Undergraduate years · Blockchain applications" }
-    details:
-      - zh: 跟随导师学习区块链与管理学知识，参与导师相关课题研究
-        en: Studied blockchain and management with my advisor and took part in the group's funded research
-      - zh: 基于 Hyperledger Fabric 搭建区块链，并在其上开发农产品信息管理系统
-        en: Deployed a Hyperledger Fabric blockchain and developed an agricultural product information system on it
-
+        
+  
 grants:
   - role: { zh: 主持, en: PI }
     title:
       zh: 新质生产力发展、平台经济新业态与高质量充分就业：特征事实与作用机制
       en: "New Quality Productive Forces, New Forms of the Platform Economy and High-Quality Full Employment: Stylized Facts and Mechanisms"
     funder: { zh: 江西省研究生创新专项资金项目, en: Jiangxi Provincial Graduate Innovation Fund }
+  - role: { zh: 参与, en: Member }
+    title:
+      zh: 人工智能技术与鲍莫尔成本病：理论机制、实证识别与政策设计
+      en: "AI Technology and Baumol's Cost Disease: Theoretical Mechanism, Empirical Identification and Policy Design"
+    funder: { zh: 江西省研究生创新专项资金项目, en: Jiangxi Provincial Graduate Innovation Fund }
+  - role: { zh: 参与, en: Member }
+    title:
+      zh: 人工智能与制造业价值链升级：基于新质生产力视角
+      en: "AI and Manufacturing Value Chain Upgrade: A New Quality Productive Forces Perspective"
+    funder: { zh: 江西财经大学青年马克思主义者培养工程学生项目, en: JUFE Youth Marxist Cadre Training Project }
   - role: { zh: 参与, en: Member }
     title:
       zh: 机器人应用与工资极化：理论机制和中国证据
